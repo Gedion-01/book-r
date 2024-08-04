@@ -14,15 +14,20 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import { z } from "zod";
 
+import axios from "axios";
+import toast from "react-hot-toast";
+import { FormControlLabel, FormHelperText } from "@mui/material";
+import { useRouter } from "next/navigation";
+
 interface AuthFormProps {
   mode: "login" | "sign-up";
-  role: "admin" | "user" | "owner";
+  role: "ADMIN" | "OWNER" | "USER";
   title: string;
 }
 
 export default function AuthForm({ mode, role, title }: AuthFormProps) {
   const pathname = usePathname();
-  console.log(pathname);
+  console.log(pathname, role, mode);
 
   if (mode === "sign-up") {
     const signUpformSchema = z
@@ -31,16 +36,20 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
         password: z
           .string()
           .min(6, "Password must be at least 6 characters long"),
-        remember_me: z.boolean(),
         confirmPassword: z
           .string()
           .min(6, "Password must be at least 6 characters long"),
         location: z.string().min(1, "Location is required"),
         phoneNumber: z.string().min(1, "Phone number is required"),
+        terms_and_condition_accepted: z
+          .boolean()
+          .refine((value) => value === true, {
+            message: "You must accept the terms and conditions",
+          }),
       })
       .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",
-        path: ["confirmPassword", "password"],
+        path: ["confirmPassword"],
       });
 
     const {
@@ -48,16 +57,16 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
       handleSubmit,
       watch,
       reset,
-      formState: { errors, touchedFields },
+      formState: { errors, touchedFields, isSubmitting },
     } = useForm<z.infer<typeof signUpformSchema>>({
       resolver: zodResolver(signUpformSchema),
       defaultValues: {
         email: "",
         password: "",
         confirmPassword: "",
-        remember_me: false,
         location: "",
         phoneNumber: "",
+        terms_and_condition_accepted: false,
       },
     });
 
@@ -65,7 +74,20 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
       reset();
     }, [mode]);
 
-    const onSubmit = (data: z.infer<typeof signUpformSchema>) => {};
+    const onSubmit = async (data: z.infer<typeof signUpformSchema>) => {
+      try {
+        const formData = { ...data, role };
+        const res = await axios.post("/api/signup", formData);
+        toast.success("Account created sucessfully");
+        reset();
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 400) {
+          toast.error("Invalid data is provided");
+        } else {
+          toast.error("Something went wrong");
+        }
+      }
+    };
     return (
       <div className="px-4 mx-auto w-[552px]">
         <div className="flex flex-row gap-3 mb-6">
@@ -163,9 +185,20 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
               helperText={errors.phoneNumber?.message}
             />
 
-            <div className="flex flex-row gap-2 items-center">
-              <Checkbox sx={{}} />
-              <h1>Remember me</h1>
+            <div className="">
+              <FormControlLabel
+                control={
+                  <Checkbox {...register("terms_and_condition_accepted")} />
+                }
+                label="I accept the terms and conditions"
+              />
+              {errors.terms_and_condition_accepted && (
+                <FormHelperText error>
+                  <span className="px-4">
+                    {errors.terms_and_condition_accepted.message}
+                  </span>
+                </FormHelperText>
+              )}
             </div>
             <Button
               type="submit"
@@ -179,6 +212,7 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
                 width: "100%",
                 height: "42px",
               }}
+              disabled={isSubmitting}
             >
               Sign up
             </Button>
@@ -200,6 +234,7 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
   }
 
   if (mode === "login") {
+    const router = useRouter();
     const signInformSchema = z.object({
       email: z.string().email("Invalid email").min(1, "Email is required"),
       password: z
@@ -213,7 +248,7 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
       handleSubmit,
       watch,
       reset,
-      formState: { errors, touchedFields },
+      formState: { errors, touchedFields, isSubmitting },
     } = useForm<z.infer<typeof signInformSchema>>({
       resolver: zodResolver(signInformSchema),
       defaultValues: {
@@ -227,7 +262,23 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
       reset();
     }, [mode]);
 
-    const onSubmit = (data: z.infer<typeof signInformSchema>) => {};
+    const onSubmit = async (data: z.infer<typeof signInformSchema>) => {
+      try {
+        const formData = { ...data, role };
+        const res = await axios.post("/api/login", formData);
+        console.log(res.data);
+
+        toast.success("Signed in sucessfully");
+
+        router.push(`/owner/${res.data.id}`);
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 400) {
+          toast.error("Invalid email or password");
+        } else {
+          toast.error("Something went wrong");
+        }
+      }
+    };
 
     return (
       <div className="px-4 mx-auto w-[552px]">
@@ -302,7 +353,7 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
             />
 
             <div className="flex flex-row gap-2 items-center">
-              <Checkbox sx={{}} />
+              <Checkbox {...register("remember_me")} sx={{}} />
               <h1>Remember me</h1>
             </div>
             <Button
@@ -317,6 +368,7 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
                 width: "100%",
                 height: "42px",
               }}
+              disabled={isSubmitting}
             >
               Login
             </Button>

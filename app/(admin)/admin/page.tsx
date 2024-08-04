@@ -8,5 +8,5 @@ interface PageProps {
 
 export default function Page({ searchParams }: PageProps) {
   const formMode = searchParams.mode || "login";
-  return <AuthForm mode={formMode} role="OWNER" title={formMode === "login" ? "Login as Book Owner" : "Signup as Book Owner"} />;
+  return <AuthForm mode={formMode} role="ADMIN" title={formMode === "login" ? "Login as Admin" : "Signup as Admin"} />;
 }

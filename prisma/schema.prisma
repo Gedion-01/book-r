@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  USER
+}
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum BookStatus {
+  AVAILABLE
+  RENTED
+  UNAVAILABLE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  location  String
+  phone     String   @unique
+  password  String
+  role      Role     @default(USER)
+  books     Book[]    @relation("OwnerBooks")
+  transactions Transaction[]
+  status    UserStatus
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Book {
+  id            String       @id @default(cuid())
+  title         String
+  author        String
+  category      String
+  quantity      Int
+  status        BookStatus
+  owner         User      @relation("OwnerBooks", fields: [ownerId], references: [id])
+  ownerId       String
+  transactions  Transaction[]
+  isApproved    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Transaction {
+  id            String       @id @default(cuid())
+  book          Book      @relation(fields: [bookId], references: [id])
+  bookId        String
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+  rentPrice     Float
+  rentedAt      DateTime  @default(now())
+  returnedAt    DateTime?
+}
+

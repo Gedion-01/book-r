@@ -24,9 +24,8 @@ enum UserStatus {
 }
 
 enum BookStatus {
-  AVAILABLE
   RENTED
-  UNAVAILABLE
+  FREE
 }
 
 model User {
@@ -46,7 +45,6 @@ model Book {
   id            String       @id @default(cuid())
   title         String
   author        String
-  category      String
   quantity      Int
   status        BookStatus
   owner         User      @relation("OwnerBooks", fields: [ownerId], references: [id])
@@ -54,7 +52,17 @@ model Book {
   transactions  Transaction[]
   isApproved    Boolean   @default(false)
   createdAt     DateTime  @default(now())
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
   updatedAt     DateTime  @updatedAt
+}
+
+model Category {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  courses Book[]
 }
 
 model Transaction {

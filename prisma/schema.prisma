@@ -18,6 +18,7 @@ enum Role {
   OWNER
   USER
 }
+
 enum UserStatus {
   ACTIVE
   DISABLED
@@ -29,50 +30,52 @@ enum BookStatus {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  location  String
-  phone     String   @unique
-  password  String
-  role      Role     @default(USER)
-  books     Book[]    @relation("OwnerBooks")
+  id           String        @id @default(cuid())
+  email        String        @unique
+  location     String
+  phone        String        @unique
+  password     String
+  role         Role          @default(USER)
+  books        Book[]        @relation("OwnerBooks")
   transactions Transaction[]
-  status    UserStatus
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status       UserStatus
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
+
 model Book {
-  id            String       @id @default(cuid())
-  title         String
-  author        String
-  quantity      Int
-  status        BookStatus
-  owner         User      @relation("OwnerBooks", fields: [ownerId], references: [id])
-  ownerId       String
-  transactions  Transaction[]
-  isApproved    Boolean   @default(false)
-  createdAt     DateTime  @default(now())
+  id           String        @id @default(cuid())
+  title        String
+  author       String
+  quantity     Int
+  status       BookStatus
+  owner        User          @relation("OwnerBooks", fields: [ownerId], references: [id])
+  ownerId      String
+  rentPrice    Float
+  bookImageUrl    String
+  transactions Transaction[]
+  isApproved   Boolean       @default(false)
+  createdAt    DateTime      @default(now())
 
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id])
 
-  updatedAt     DateTime  @updatedAt
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
-  id      String   @id @default(uuid())
-  name    String   @unique
-  courses Book[]
+  id      String @id @default(uuid())
+  name    String @unique
+  books Book[]
 }
 
 model Transaction {
-  id            String       @id @default(cuid())
-  book          Book      @relation(fields: [bookId], references: [id])
-  bookId        String
-  user          User      @relation(fields: [userId], references: [id])
-  userId        String
-  rentPrice     Float
-  rentedAt      DateTime  @default(now())
-  returnedAt    DateTime?
+  id         String    @id @default(cuid())
+  book       Book      @relation(fields: [bookId], references: [id])
+  bookId     String
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+  rentPrice  Float
+  rentedAt   DateTime  @default(now())
+  returnedAt DateTime?
 }
-

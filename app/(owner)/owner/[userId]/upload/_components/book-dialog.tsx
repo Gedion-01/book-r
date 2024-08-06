@@ -11,22 +11,32 @@ import { useStore } from "@/store/store";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { z } from "zod";
 
+import { Book } from "@prisma/client";
+
 interface FormDialogProps {
   options: { label: string; value: string }[];
+  books: Book[];
 }
 
 // Define the Zod schema
 const formSchema = z.object({
-  bookName: z.string().min(1, "Book Name is required"),
+  bookTitle: z.string().min(1, "Book Name is required"),
   authorName: z.string().min(1, "Author Name is required"),
-  category: z.string().min(1, "Category is required"),
+  bookCategoryId: z.string().min(1, "Category is required"),
 });
 
-export default function FormDialog({ options }: FormDialogProps) {
-  const { addBook, books } = useStore();
+export default function FormDialog({ options, books }: FormDialogProps) {
+  const { addBook, book } = useStore();
   const { openDialog, setOpenDialog } = useStore();
   const [selectedOption, setSelectedOption] = React.useState("");
   const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
+
+  React.useEffect(() => {
+    // Set the selectedOption if book exists and bookCategoryId is available
+    if (book?.bookCategoryId) {
+      setSelectedOption(book.bookCategoryId);
+    }
+  }, [book]);
 
   const handleClose = () => {
     setOpenDialog(false);
@@ -34,6 +44,7 @@ export default function FormDialog({ options }: FormDialogProps) {
 
   const handleChange = (event: any) => {
     setSelectedOption(event.target.value as string);
+    addBook({ ...book!, bookCategoryId: event.target.value });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -43,9 +54,9 @@ export default function FormDialog({ options }: FormDialogProps) {
 
     // Validate the form data using Zod
     const result = formSchema.safeParse({
-      bookName: formJson.bookName,
+      bookTitle: formJson.bookTitle,
       authorName: formJson.authorName,
-      category: formJson.category,
+      bookCategoryId: formJson.bookCategoryId,
     });
 
     if (!result.success) {
@@ -56,11 +67,10 @@ export default function FormDialog({ options }: FormDialogProps) {
 
     // If validation passes, handle the form submission
     console.log(result.data);
-    addBook(result.data);
+    addBook({ bookId: book?.bookId, ...result.data });
     handleClose();
   };
-  console.log(books);
-  
+  console.log(book);
 
   return (
     <React.Fragment>
@@ -76,14 +86,16 @@ export default function FormDialog({ options }: FormDialogProps) {
         <DialogTitle>Add Book</DialogTitle>
         <DialogContent sx={{}}>
           <TextField
-            id="bookName"
-            name="bookName"
+            id="bookTitle"
+            name="bookTitle"
             label="Book Name"
             variant="filled"
             fullWidth
             sx={{ marginBottom: "20px" }}
-            error={!!errors.bookName}
-            helperText={errors.bookName}
+            error={!!errors.bookTitle}
+            helperText={errors.bookTitle}
+            value={book?.bookTitle}
+            onChange={(e) => addBook({ ...book!, bookTitle: e.target.value })}
           />
           <TextField
             id="authorName"
@@ -94,6 +106,8 @@ export default function FormDialog({ options }: FormDialogProps) {
             sx={{ marginBottom: "20px" }}
             error={!!errors.authorName}
             helperText={errors.authorName}
+            value={book?.authorName}
+            onChange={(e) => addBook({ ...book!, authorName: e.target.value })}
           />
           <FormControl variant="filled" fullWidth error={!!errors.category}>
             <InputLabel id="demo-simple-select-filled-label">
@@ -102,7 +116,7 @@ export default function FormDialog({ options }: FormDialogProps) {
             <Select
               labelId="demo-simple-select-filled-label"
               id="demo-simple-select-filled"
-              name="category"
+              name="bookCategoryId"
               value={selectedOption}
               onChange={handleChange}
               fullWidth
@@ -113,8 +127,8 @@ export default function FormDialog({ options }: FormDialogProps) {
                 </MenuItem>
               ))}
             </Select>
-            {errors.category && (
-              <p style={{ color: "red" }}>{errors.category}</p>
+            {errors.bookCategoryId && (
+              <p style={{ color: "red" }}>{errors.bookCategoryId}</p>
             )}
           </FormControl>
         </DialogContent>

@@ -39,3 +39,22 @@ export async function verifyAuth(userId: string) {
     return false;
   }
 }
+
+export default async function getUserId() {
+  const cookie = cookies().get("Authorization");
+  const jwt = cookie?.value;
+
+  if (!jwt) {
+    return null;
+  }
+
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
+  try {
+    const { payload } = await jose.jwtVerify(jwt, secret);
+    return payload.sub;
+  } catch (error) {
+    console.error("JWT Verification Error:", error);
+    return null;
+  }
+}

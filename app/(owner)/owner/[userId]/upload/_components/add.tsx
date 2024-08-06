@@ -12,13 +12,16 @@ import {
 import { useStore } from "@/store/store";
 import FormDialog from "./book-dialog";
 import Item from "./items";
+import { SeparatorHorizontal } from "lucide-react";
+import { Book } from "@prisma/client";
 
 interface BookDialogProps {
   options: { label: string; value: string }[];
+  books: Book[];
 }
 
-export default function BookSearch({ options }: BookDialogProps) {
-  const { books } = useStore();
+export default function BookSearch({ options, books }: BookDialogProps) {
+  const { book, addBook } = useStore();
   const [showList, setShowList] = React.useState(false);
   const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout | null>(null);
   const { setOpenDialog } = useStore();
@@ -74,9 +77,25 @@ export default function BookSearch({ options }: BookDialogProps) {
             }}
             onMouseDown={handleListItemClick} // Handle mouse down to prevent blur from closing the list
           >
-            {books.map((book, i) => (
-              <Item key={i} title={book.bookName} />
+            {books.map((book) => (
+              <button
+                className="w-full"
+                onClick={() => {
+                  setOpenDialog(true);
+                  addBook({
+                    bookTitle: book.title,
+                    authorName: book.author,
+                    bookCategoryId: book.categoryId!,
+                    bookId: book.id,
+                  });
+                }}
+              >
+                <Item title={book.title} />
+              </button>
             ))}
+
+            {book && <Item title={book.bookTitle} />}
+
             <Button
               onClick={() => setOpenDialog(true)}
               type="submit"
@@ -98,7 +117,7 @@ export default function BookSearch({ options }: BookDialogProps) {
           </List>
         )}
       </Box>
-      <FormDialog options={options} />
+      <FormDialog options={options} books={books} />
     </>
   );
 }

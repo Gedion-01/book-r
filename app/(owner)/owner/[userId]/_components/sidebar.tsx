@@ -1,10 +1,18 @@
+"use client"
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 
 interface PageProps {
   userId: string;
 }
 
 export default function Sidebar({ userId }: PageProps) {
+  const pathname = usePathname();
+
+  
+
   return (
     <div className="flex flex-col w-[279px] bg-[#171B36] text-white p-4 space-y-4 rounded-[15px]">
       <div className="flex items-center justify-center text-lg font-bold mb-4">
@@ -48,44 +56,46 @@ export default function Sidebar({ userId }: PageProps) {
       </div>
       <nav className="flex-1">
         <ul className="border-y border-[#F8F8F8] border-opacity-50 py-[20px]">
-          <li className="flex flex-row items-center py-[10px] px-[15px] gap-4 rounded hover:bg-blue-700 opacity-75 hover:opacity-100">
-            <div>
-              <svg
-                width="22"
-                height="20"
-                viewBox="0 0 22 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M1 3C1 2.46957 1.21071 1.96086 1.58579 1.58579C1.96086 1.21071 2.46957 1 3 1H9V19H3C2.46957 19 1.96086 18.7893 1.58579 18.4142C1.21071 18.0391 1 17.5304 1 17V3ZM13 1H19C19.5304 1 20.0391 1.21071 20.4142 1.58579C20.7893 1.96086 21 2.46957 21 3V8H13V1ZM13 12H21V17C21 17.5304 20.7893 18.0391 20.4142 18.4142C20.0391 18.7893 19.5304 19 19 19H13V12Z"
-                  stroke="white"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <h1 className="">Dashboard</h1>
-          </li>
-          <Link href={`${userId}/upload`}>
-          <li className="flex flex-row items-center py-[10px] px-[15px] gap-4 rounded hover:bg-blue-700 opacity-75  hover:opacity-100">
-            <div>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19.5 2.25H6.75C5.95435 2.25 5.19129 2.56607 4.62868 3.12868C4.06607 3.69129 3.75 4.45435 3.75 5.25V21C3.75 21.1989 3.82902 21.3897 3.96967 21.5303C4.11032 21.671 4.30109 21.75 4.5 21.75H18C18.1989 21.75 18.3897 21.671 18.5303 21.5303C18.671 21.3897 18.75 21.1989 18.75 21C18.75 20.8011 18.671 20.6103 18.5303 20.4697C18.3897 20.329 18.1989 20.25 18 20.25H5.25C5.25 19.8522 5.40804 19.4706 5.68934 19.1893C5.97064 18.908 6.35218 18.75 6.75 18.75H19.5C19.6989 18.75 19.8897 18.671 20.0303 18.5303C20.171 18.3897 20.25 18.1989 20.25 18V3C20.25 2.80109 20.171 2.61032 20.0303 2.46967C19.8897 2.32902 19.6989 2.25 19.5 2.25ZM18.75 17.25H6.75C6.22325 17.2492 5.70569 17.388 5.25 17.6522V5.25C5.25 4.85218 5.40804 4.47064 5.68934 4.18934C5.97064 3.90804 6.35218 3.75 6.75 3.75H18.75V17.25Z"
-                  fill="white"
-                />
-              </svg>
-            </div>
-            <h1>Book Upload</h1>
-          </li>
+          <Link href={`/owner/${userId}`}>
+            <li className={`flex flex-row items-center py-[10px] px-[15px] gap-4 rounded hover:bg-blue-700  hover:opacity-100 ${pathname === `/owner/${userId}` ? 'bg-blue-700 opacity-100' : 'opacity-75'}`}>
+              <div>
+                <svg
+                  width="22"
+                  height="20"
+                  viewBox="0 0 22 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 3C1 2.46957 1.21071 1.96086 1.58579 1.58579C1.96086 1.21071 2.46957 1 3 1H9V19H3C2.46957 19 1.96086 18.7893 1.58579 18.4142C1.21071 18.0391 1 17.5304 1 17V3ZM13 1H19C19.5304 1 20.0391 1.21071 20.4142 1.58579C20.7893 1.96086 21 2.46957 21 3V8H13V1ZM13 12H21V17C21 17.5304 20.7893 18.0391 20.4142 18.4142C20.0391 18.7893 19.5304 19 19 19H13V12Z"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <h1 className="">Dashboard</h1>
+            </li>
+          </Link>
+          <Link href={`/owner/${userId}/upload`}>
+            <li className={`flex flex-row items-center py-[10px] px-[15px] gap-4 rounded hover:bg-blue-700  hover:opacity-100 ${pathname.startsWith(`/owner/${userId}/upload`) ? 'bg-blue-700 opacity-100' : 'opacity-75'}`}>
+              <div>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19.5 2.25H6.75C5.95435 2.25 5.19129 2.56607 4.62868 3.12868C4.06607 3.69129 3.75 4.45435 3.75 5.25V21C3.75 21.1989 3.82902 21.3897 3.96967 21.5303C4.11032 21.671 4.30109 21.75 4.5 21.75H18C18.1989 21.75 18.3897 21.671 18.5303 21.5303C18.671 21.3897 18.75 21.1989 18.75 21C18.75 20.8011 18.671 20.6103 18.5303 20.4697C18.3897 20.329 18.1989 20.25 18 20.25H5.25C5.25 19.8522 5.40804 19.4706 5.68934 19.1893C5.97064 18.908 6.35218 18.75 6.75 18.75H19.5C19.6989 18.75 19.8897 18.671 20.0303 18.5303C20.171 18.3897 20.25 18.1989 20.25 18V3C20.25 2.80109 20.171 2.61032 20.0303 2.46967C19.8897 2.32902 19.6989 2.25 19.5 2.25ZM18.75 17.25H6.75C6.22325 17.2492 5.70569 17.388 5.25 17.6522V5.25C5.25 4.85218 5.40804 4.47064 5.68934 4.18934C5.97064 3.90804 6.35218 3.75 6.75 3.75H18.75V17.25Z"
+                    fill="white"
+                  />
+                </svg>
+              </div>
+              <h1>Book Upload</h1>
+            </li>
           </Link>
           <li className="flex flex-row items-center py-[10px] px-[15px] gap-4 rounded hover:bg-blue-700 opacity-75 hover:opacity-100">
             <div>

@@ -1,26 +1,22 @@
 import { create } from "zustand";
 
-interface StoreState {
-  openDialog: boolean;
-  setOpenDialog: (open: boolean) => void;
-}
-
 interface Book {
-  bookName: string;
+  bookId?: string;
+  bookTitle: string;
   authorName: string;
-  category: string;
+  bookCategoryId: string;
 }
 
 interface StoreState {
-  books: Book[];
+  book: Book | null;
   addBook: (book: Book) => void;
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
-  books: [],
-  addBook: (book) => set((state) => ({ books: [...state.books, book] })),
+  book: null,
+  addBook: (book) => set({ book }),
   openDialog: false,
   setOpenDialog: (open) => set({ openDialog: open }),
 }));

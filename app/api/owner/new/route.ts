@@ -51,30 +51,31 @@ export async function PATCH(request: Request) {
     }
 
     // check if a book exists
-    const exitingBook = await prisma.book.findUnique({
-      where: {
-        id: bookId,
-      },
-    });
-    // if book exists, update it
-    if (exitingBook) {
-      const updatedBook = await prisma.book.update({
+    if (bookId) {
+      const exitingBook = await prisma.book.findUnique({
         where: {
-          id: exitingBook.id,
-        },
-        data: {
-          title: bookTitle,
-          author: authorName,
-          quantity: Number(bookQuantity),
-          status: "FREE",
-          ownerId: userId,
-          rentPrice: Number(rentPrice),
-          bookImageUrl: bookCoverImageUrl,
-          categoryId: bookCategoryId,
+          id: bookId,
         },
       });
-
-      return NextResponse.json("Book updated successfully", { status: 200 });
+      if (exitingBook) {
+        const updatedBook = await prisma.book.update({
+          where: {
+            id: exitingBook.id,
+          },
+          data: {
+            title: bookTitle,
+            author: authorName,
+            quantity: Number(bookQuantity),
+            status: "FREE",
+            ownerId: userId,
+            rentPrice: Number(rentPrice),
+            bookImageUrl: bookCoverImageUrl,
+            categoryId: bookCategoryId,
+          },
+        });
+  
+        return NextResponse.json("Book updated successfully", { status: 200 });
+      }
     }
 
     // create book

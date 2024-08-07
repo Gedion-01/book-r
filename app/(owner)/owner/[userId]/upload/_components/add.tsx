@@ -26,6 +26,11 @@ export default function BookSearch({ options, books }: BookDialogProps) {
   const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout | null>(null);
   const { setOpenDialog } = useStore();
 
+  // Check if the `book` object exists in the `books` array
+  const bookExists = books.some(
+    (existingBook) => existingBook.id === book?.bookId
+  );
+
   const handleFocus = () => {
     setShowList(true);
     if (timeoutId) {
@@ -46,6 +51,23 @@ export default function BookSearch({ options, books }: BookDialogProps) {
     }
   };
 
+  function onClick(newBook: {
+    bookId?: string;
+    bookTitle: string;
+    authorName: string;
+    bookCategoryId: string;
+    bookQuantity?: string;
+    bookRentPrice?: string;
+    bookCoverImageUrl?: string;
+  }) {
+    if (book?.bookId === newBook.bookId) {
+      console.log("exists");
+      return;
+    } else {
+      addBook(newBook);
+    }
+  }
+
   return (
     <>
       <Box
@@ -58,12 +80,13 @@ export default function BookSearch({ options, books }: BookDialogProps) {
       >
         <TextField
           id="search-book"
-          label="Search..."
+          placeholder="Search..."
           variant="outlined"
           fullWidth
           onFocus={handleFocus}
           onBlur={handleBlur}
           sx={{ position: "relative" }}
+          value={book?.bookTitle}
         />
         {showList && (
           <List
@@ -82,11 +105,14 @@ export default function BookSearch({ options, books }: BookDialogProps) {
                 className="w-full"
                 onClick={() => {
                   setOpenDialog(true);
-                  addBook({
+                  onClick({
                     bookTitle: book.title,
                     authorName: book.author,
                     bookCategoryId: book.categoryId!,
                     bookId: book.id,
+                    bookQuantity: String(book.quantity!),
+                    bookRentPrice: String(book.rentPrice!),
+                    bookCoverImageUrl: book.bookImageUrl!,
                   });
                 }}
               >
@@ -94,10 +120,21 @@ export default function BookSearch({ options, books }: BookDialogProps) {
               </button>
             ))}
 
-            {book && <Item title={book.bookTitle} />}
-
+            {/* {book && <Item title={book.bookTitle} />} */}
+            {!bookExists && book && <Item title={book.bookTitle} />}
             <Button
-              onClick={() => setOpenDialog(true)}
+              onClick={() => {
+                setOpenDialog(true);
+                addBook({
+                  bookTitle: "",
+                  authorName: "",
+                  bookCategoryId: "",
+                  bookId: "",
+                  bookQuantity: "",
+                  bookRentPrice: "",
+                  bookCoverImageUrl: "",
+                });
+              }}
               type="submit"
               variant="contained"
               sx={{

@@ -24,7 +24,7 @@ const StyledText = styled('text')(({ theme }) => ({
   fontSize: 20,
 }));
 
-function PieCenterLabel({ children }: { children: React.ReactNode }) {
+function PieCenterLabel({ children }: { children?: React.ReactNode }) {
   const { width, height, left, top } = useDrawingArea();
   return (
     <StyledText x={left + width / 2} y={top + height / 2}>
@@ -40,7 +40,7 @@ interface PieChartWithCenterLabelProps {
 export default function PieChartWithCenterLabel({data}: PieChartWithCenterLabelProps) {
   return (
     <PieChart series={[{ data, innerRadius: 80 }]} {...size}>
-      <PieCenterLabel>Center label</PieCenterLabel>
+      <PieCenterLabel></PieCenterLabel>
     </PieChart>
   );
 }

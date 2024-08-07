@@ -20,65 +20,22 @@ import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import ViewComfyIcon from "@mui/icons-material/ViewComfy";
 import { red } from "@mui/material/colors";
 import { Book } from "@prisma/client";
-
-const data = [
-  {
-    id: 1,
-    number: "6465",
-    name: "Derto Gada",
-    status: "Rented",
-    price: "40 Birr",
-  },
-  {
-    id: 2,
-    number: "6465",
-    name: "Fikr Eske Mekabr",
-    status: "Rented",
-    price: "40 Birr",
-  },
-  {
-    id: 3,
-    number: "6465",
-    name: "The Power of Now",
-    status: "Rented",
-    price: "40 Birr",
-  },
-  {
-    id: 4,
-    number: "5665",
-    name: "Derto Gada",
-    status: "Free",
-    price: "0.0 Birr",
-  },
-  {
-    id: 5,
-    number: "5665",
-    name: "Derto Gada",
-    status: "Free",
-    price: "0.0 Birr",
-  },
-  {
-    id: 6,
-    number: "1755",
-    name: "Derto Gada",
-    status: "Free",
-    price: "0.0 Birr",
-  },
-];
+import BookAction from "./book-action";
 
 interface BookTableProps {
   books: Book[];
+  userId: string;
 }
 
-const BookTable = ({books}: BookTableProps) => {
+const BookTable = ({ books, userId }: BookTableProps) => {
   return (
-    <div className="col-span-2 bg-white p-4 rounded shadow-md">
-      <TableContainer component={Paper} sx={{boxShadow: 0}}>
+    <div className="col-span-2 bg-white rounded shadow-md">
+      <TableContainer component={Paper} sx={{ boxShadow: 0, paddingX: "28px" }}>
         <Box
           display="flex"
           justifyContent="right"
           alignItems="center"
-          padding={2}
+          sx={{ paddingTop: "32px" }}
         >
           <Box>
             <IconButton aria-label="filter">
@@ -95,33 +52,77 @@ const BookTable = ({books}: BookTableProps) => {
             </IconButton>
           </Box>
         </Box>
-        <Typography sx={{fontWeight: "bold"}} variant="h6" gutterBottom>
-            Live Book Status
-          </Typography>
+        <Typography
+          sx={{ fontWeight: "600", fontSize: "16px;", color: "#1A1919" }}
+          gutterBottom
+        >
+          Live Book Status
+        </Typography>
         <Table aria-label="simple table">
           <TableHead sx={{}}>
-            <TableRow>
+            <TableRow sx={{}}>
               <TableCell
                 sx={{
                   color: "#656575",
                   fontWeight: "light",
+                  fontSize: "14px",
+                  padding: 0,
                 }}
               >
                 No.
               </TableCell>
-              <TableCell sx={{ color: "#656575", fontWeight: "light" }}>
+              <TableCell
+                sx={{
+                  color: "#656575",
+                  fontWeight: "light",
+                  fontSize: "14px",
+                  padding: 0,
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                }}
+              >
                 Book no.
               </TableCell>
-              <TableCell sx={{ color: "#656575", fontWeight: "light" }}>
+              <TableCell
+                sx={{
+                  color: "#656575",
+                  fontWeight: "light",
+                  fontSize: "14px",
+                  padding: 0,
+                }}
+              >
                 Book Name
               </TableCell>
-              <TableCell sx={{ color: "#656575", fontWeight: "light" }}>
+              <TableCell
+                sx={{
+                  color: "#656575",
+                  fontWeight: "light",
+                  fontSize: "14px",
+                  padding: 0,
+                }}
+              >
                 Status
               </TableCell>
-              <TableCell sx={{ color: "#656575", fontWeight: "light" }}>
+              <TableCell
+                sx={{
+                  color: "#656575",
+                  fontWeight: "light",
+                  fontSize: "14px",
+                  padding: 0,
+                }}
+              >
                 Price
               </TableCell>
-              <TableCell sx={{ color: "#656575", fontWeight: "light" }}>
+              <TableCell
+                sx={{
+                  color: "#656575",
+                  fontWeight: "light",
+                  fontSize: "14px",
+                  padding: 0,
+                  textAlign: "center", // Center-align text horizontally
+                  verticalAlign: "middle", // Center-align text vertically
+                }}
+              >
                 Action
               </TableCell>
             </TableRow>
@@ -129,10 +130,23 @@ const BookTable = ({books}: BookTableProps) => {
           <TableBody>
             {books.map((row, index) => (
               <TableRow key={row.id}>
-                <TableCell>{String(index + 1).padStart(2, "0")}</TableCell>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{row.title}</TableCell>
-                <TableCell>
+                <TableCell sx={{ paddingY: 1, paddingX: 0 }}>
+                  {String(index + 1).padStart(2, "0")}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    paddingY: 1,
+                    paddingX: 0,
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                  }}
+                >
+                  {index + 1}
+                </TableCell>
+                <TableCell sx={{ paddingY: 1, paddingX: 0 }}>
+                  {row.title}
+                </TableCell>
+                <TableCell sx={{ paddingY: 1, paddingX: 0 }}>
                   {row.status === "RENTED" ? (
                     <Box
                       sx={{
@@ -190,18 +204,19 @@ const BookTable = ({books}: BookTableProps) => {
                     </Box>
                   )}
                 </TableCell>
-                <TableCell>{row.rentPrice}</TableCell>
-                <TableCell>
-                  <IconButton aria-label="edit">
-                    <EditIcon sx={{
-                      color: "black"
-                    }} />
-                  </IconButton>
-                  <IconButton aria-label="delete">
-                    <DeleteIcon sx={{
-                      color: red[500],
-                    }} />
-                  </IconButton>
+                <TableCell sx={{ paddingY: 1, paddingX: 0 }}>
+                  {row.rentPrice}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    paddingY: 1,
+                    paddingX: 0,
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                  }}
+                >
+                  {" "}
+                  <BookAction book={row} userId={userId} />
                 </TableCell>
               </TableRow>
             ))}

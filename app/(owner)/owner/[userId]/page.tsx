@@ -7,7 +7,10 @@ import LiveBookStatus from "./_components/live-book-status";
 import prisma from "@/lib/prisma";
 import EarningSummaryChart from "./_components/earnimg-summary";
 import PieChartWithCenterLabel from "./_components/available-books";
-import { getBooksByCategory, getBooksCountByCategoryForUser } from "@/lib/get-books-by-category";
+import { getBooksCountByCategoryForUser } from "@/lib/get-books-by-category";
+
+import { Box, Divider, Typography } from "@mui/material";
+import { red } from "@mui/material/colors";
 
 export default async function OwnerPage({
   params,
@@ -41,42 +44,219 @@ export default async function OwnerPage({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full">
         {/* <!-- Stats Card --> */}
         <div className="">
-          <div className="bg-white p-4 rounded shadow-md h-full">
-            <h3 className="text-xl font-semibold">This Month Statistics</h3>
-            <h3 className="text-sm font-thin">Tue, 14 Nov, 2024, 11.30 AM </h3>
-            <div className="w-full px-[15px] shadow-lg rounded-[15px] p-[24px] mt-[38px]">
-              <div className="text-[#656575] flex flex-row justify-between border-b border-[#A3A3A3] mb-[29px] pb-[12px]">
-                <div className="text-xl font-bold">Income</div>
-                <div className="bg-[#F4F5F7] px-[8px] py-[4px]">This month</div>
-              </div>
+          <div className="bg-white rounded shadow-md h-full">
+            <Box component="div" sx={{ paddingTop: "32px", paddingX: "15px" }}>
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  fontWeight: "500",
+                  color: "#525256",
+                }}
+              >
+                This Month Statistics
+              </Typography>
+              <Typography
+                sx={{
+                  color: "#A3A3A3",
+                  fontSize: "14px",
+                  fontWeight: "400",
+                }}
+              >
+                {" "}
+                Tue, 14 Nov, 2024, 11.30 AM
+              </Typography>
+            </Box>
+            <Box
+              component={"div"}
+              sx={{
+                paddingTop: "38px",
+                paddingX: "15px",
+              }}
+            >
+              <Box
+                component={"div"}
+                sx={{
+                  padding: "24px",
+                  boxShadow: "0px 8px 24px rgba(69, 69, 80, 0.2)",
+                  borderRadius: "8px",
+                }}
+              >
+                <Box
+                  component={"div"}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    height: "36px",
+                    borderBottom: "1px solid rgba(163, 163, 163, 0.2)",
+                    paddingBottom: "12px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "18px",
+                      fontWeight: "500",
+                      color: "#525256",
+                    }}
+                  >
+                    Income
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "12px",
+                      fontWeight: "400",
+                      color: "#525256",
+                      paddingX: "8px",
+                      paddingY: "4px",
+                      bgcolor: "#F4F5F7",
+                      borderRadius: "2px",
+                    }}
+                  >
+                    This Month
+                  </Typography>
+                </Box>
+                <Box
+                  component={"div"}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginTop: "24px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "28px",
+                      fontWeight: "700",
+                      color: "#01150C",
+                      display: "inline",
+                      lineHeight: "40px",
+                    }}
+                  >
+                    ETB 9460.00
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "16px",
+                      fontWeight: "500",
+                      color: "#FF2727",
+                      lineHeight: "28px",
+                      letterSpacing: "-0.9%",
+                      marginTop: "12px",
+                      marginLeft: "4px",
+                    }}
+                  >
+                    ↓ 1.5%
+                  </Typography>
+                </Box>
+                <Box
+                  component={"div"}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    marginTop: "8px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: "300",
+                      color: "#656575",
+                      lineHeight: "24px",
+                    }}
+                  >
+                    Compared to ETB9940 last month
+                  </Typography>
 
-              <p className="text-2xl font-bold my-8">
-                ETB 9460.00 <span className="text-red-600 text-sm">↓1.5%</span>
-              </p>
-              <p className="text-gray-500 mt-1">
-                Compared to ETB8940 last month
-              </p>
-              <div className="text-[#656575] flex flex-row justify-between pb-[12px] mt-[8px]">
-                <div className="text-xl font-bold">Last Month Income</div>
-                <div className="">ETB 25658.00</div>
-              </div>
-            </div>
-            <div className="col-span-1 bg-white shadow-lg rounded-[15px] p-[24px] mt-[38px]">
-            <div className="text-[#656575] flex flex-row justify-between mb-[29px] pb-[12px]">
-                <div className="text-xl font-bold">Available Books</div>
-                <div className="bg-[#F4F5F7] px-[8px] py-[4px]">Today</div>
-              </div>
-            <div className="flex justify-center items-center">
-              {/* <!-- Placeholder for chart --> */}
-              <PieChartWithCenterLabel data={data} />
-            </div>
+                  <Box
+                    component={"div"}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: "700",
+                        color: "#525256",
+                        lineHeight: "24px",
+                      }}
+                    >
+                      Last Month Income
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: "700",
+                        color: "#525256",
+                        lineHeight: "24px",
+                        marginTop: "2px",
+                      }}
+                    >
+                      ETB 25658.00
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+              <Box
+                component={"div"}
+                sx={{
+                  padding: "24px",
+                  boxShadow: "0px 8px 24px rgba(69, 69, 80, 0.2)",
+                  borderRadius: "8px",
+                  marginTop: "38px",
+                }}
+              >
+                <Box
+                  component={"div"}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    height: "36px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "18px",
+                      fontWeight: "500",
+                      color: "#525256",
+                    }}
+                  >
+                    Available Books
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "12px",
+                      fontWeight: "400",
+                      color: "#525256",
+                      paddingX: "8px",
+                      paddingY: "4px",
+                      bgcolor: "#F4F5F7",
+                      borderRadius: "2px",
+                    }}
+                  >
+                    Today
+                  </Typography>
+                </Box>
+                <Box
+                  component={"div"}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginTop: "30px",
+                  }}
+                >
+                   <PieChartWithCenterLabel data={data} />
+                </Box>
+              </Box>
+            </Box>
           </div>
-          </div>
-         
         </div>
         <div className="col-span-2 flex flex-col gap-4">
           {/* <!-- Live Book Status --> */}
-          <LiveBookStatus books={books} />
+          <LiveBookStatus books={books} userId={userPayload.id} />
 
           {/* <!-- Additional Content --> */}
 

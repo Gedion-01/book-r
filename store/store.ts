@@ -5,6 +5,9 @@ interface Book {
   bookTitle: string;
   authorName: string;
   bookCategoryId: string;
+  bookQuantity?: string;
+  bookRentPrice?: string;
+  bookCoverImageUrl?: string;
 }
 
 interface StoreState {

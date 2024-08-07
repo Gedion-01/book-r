@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import * as z from "zod";
 import {
   Box,
@@ -11,13 +12,11 @@ import {
   TextField,
 } from "@mui/material";
 import Add from "./add";
-import { useState } from "react";
 import { useStore } from "@/store/store";
 import { FileUpload } from "@/components/fike-upload";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import axios from "axios";
-
 import { Book } from "@prisma/client";
 
 const quantity = [
@@ -50,19 +49,24 @@ interface BookFormProps {
 
 export default function BookForm({ categories, books }: BookFormProps) {
   const { book } = useStore();
-  const [selectedOption, setSelectedOption] = useState("");
-  const [rentPrice, setRentPrice] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [rentPrice, setRentPrice] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  console.log(imageUrl);
+  useEffect(() => {
+    if (book) {
+      setRentPrice(book.bookRentPrice || "");
+      setSelectedOption(book.bookQuantity || "");
+      setImageUrl(book.bookCoverImageUrl || "");
+    }
+  }, [book]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(book?.bookId!);
-    
+
     // Construct the form data object
     const formData = {
       rentPrice,
@@ -70,14 +74,9 @@ export default function BookForm({ categories, books }: BookFormProps) {
       bookCoverImageUrl: imageUrl,
       ...book,
     };
-    console.log(formData);
 
     // Validate the form data using Zod
     const result = formSchema.safeParse(formData);
-
-    if (!book) {
-      toast.error("Book details is required");
-    }
 
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
@@ -103,7 +102,6 @@ export default function BookForm({ categories, books }: BookFormProps) {
     } finally {
       setIsSubmitting(false);
     }
-    console.log(result.data);
   };
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -159,7 +157,7 @@ export default function BookForm({ categories, books }: BookFormProps) {
               onChange={handleChange}
               error={!!errors.bookCategoryId}
             >
-              {quantity.map((q, i) => (
+              {quantity.map((q) => (
                 <MenuItem key={q.id} value={q.name}>
                   {q.name}
                 </MenuItem>
@@ -197,37 +195,43 @@ export default function BookForm({ categories, books }: BookFormProps) {
             borderRadius: "20px",
           }}
         >
-          <svg
-            width="17"
-            height="16"
-            viewBox="0 0 17 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clipPath="url(#clip0_27_8041)">
-              <path
-                d="M7.5 12V3.85L4.9 6.45L3.5 5L8.5 0L13.5 5L12.1 6.45L9.5 3.85V12H7.5ZM2.5 16C1.95 16 1.47933 15.8043 1.088 15.413C0.696666 15.0217 0.500667 14.5507 0.5 14V11H2.5V14H14.5V11H16.5V14C16.5 14.55 16.3043 15.021 15.913 15.413C15.5217 15.805 15.0507 16.0007 14.5 16H2.5Z"
-                fill="#00ABFF"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_27_8041">
-                <rect
-                  width="16"
-                  height="16"
-                  fill="white"
-                  transform="translate(0.5)"
-                />
-              </clipPath>
-            </defs>
-          </svg>
-          <span>Upload Book Cover</span>
+          {isEditing  ? (
+            "Cancel"
+          ) : (
+            <>
+              <svg
+                width="17"
+                height="16"
+                viewBox="0 0 17 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clipPath="url(#clip0_27_8041)">
+                  <path
+                    d="M7.5 12V3.85L4.9 6.45L3.5 5L8.5 0L13.5 5L12.1 6.45L9.5 3.85V12H7.5ZM2.5 16C1.95 16 1.47933 15.8043 1.088 15.413C0.696666 15.0217 0.500667 14.5507 0.5 14V11H2.5V14H14.5V11H16.5V14C16.5 14.55 16.3043 15.021 15.913 15.413C15.5217 15.805 15.0507 16.0007 14.5 16H2.5Z"
+                    fill="#00ABFF"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_27_8041">
+                    <rect
+                      width="16"
+                      height="16"
+                      fill="white"
+                      transform="translate(0.5)"
+                    />
+                  </clipPath>
+                </defs>
+              </svg>
+              <span>Upload Book Cover</span>
+            </>
+          )}
         </Button>
         {errors.bookCoverImageUrl && (
           <p style={{ color: "red" }}>{errors.bookCoverImageUrl}</p>
         )}
-        {imageUrl && (
-          <div className="relative  mt-2 mb-[10px]">
+        {imageUrl && !isEditing && (
+          <div className="relative mt-2 mb-[10px]">
             <Image
               alt="Upload"
               width={600}
@@ -238,14 +242,14 @@ export default function BookForm({ categories, books }: BookFormProps) {
           </div>
         )}
 
-        {isEditing && !imageUrl && (
+        {isEditing && (
           <div>
             <FileUpload
               endpoint="courseImage"
               onChange={(url) => {
                 if (url) {
                   setImageUrl(url);
-                  // Optionally validate imageUrl here if needed
+                  setIsEditing(false)
                 }
               }}
             />

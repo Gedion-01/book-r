@@ -1,5 +1,8 @@
 import getUserId, { verifyAuth } from "@/lib/auth";
+import { defineAbilitiesFor } from "@/lib/casl-ability";
 import prisma from "@/lib/prisma";
+import { ForbiddenError } from "@casl/ability";
+import { Book } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 interface FormData {
@@ -22,6 +25,20 @@ export async function PATCH(request: Request) {
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: { role: true },
+    });
+
+    if (!user) {
+      return new NextResponse("User not found", { status: 404 });
+    }
+
+    const { role } = user;
+    const ability = defineAbilitiesFor(role, { userId });
 
     const {
       bookId,
@@ -58,6 +75,8 @@ export async function PATCH(request: Request) {
         },
       });
       if (exitingBook) {
+        ForbiddenError.from(ability).throwUnlessCan("update", "Book");
+
         const updatedBook = await prisma.book.update({
           where: {
             id: exitingBook.id,
@@ -73,11 +92,11 @@ export async function PATCH(request: Request) {
             categoryId: bookCategoryId,
           },
         });
-  
+
         return NextResponse.json("Book updated successfully", { status: 200 });
       }
     }
-
+    ForbiddenError.from(ability).throwUnlessCan("update", "Book");
     // create book
     const book = await prisma.book.create({
       data: {
@@ -94,7 +113,10 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json("Book created successfully", { status: 201 });
   } catch (error) {
-    console.log("BOOK]", error);
+    console.log("NEW_BOOK]", error);
+    if (error instanceof ForbiddenError) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

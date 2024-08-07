@@ -8,6 +8,8 @@ import { Book } from "@prisma/client";
 
 import { useStore } from "@/store/store";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { DeleteDialog } from "./delete-dialog";
 
 interface BookTableProps {
   book: Book;
@@ -17,6 +19,18 @@ interface BookTableProps {
 export default function BookAction({ book, userId }: BookTableProps) {
   const { addBook } = useStore();
   const router = useRouter();
+
+  const [open, setOpen] = useState(false);
+  const [bookId, setBookId] = useState("");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+    setBookId(book.id);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   function onClick(newBook: {
     bookId?: string;
@@ -50,13 +64,14 @@ export default function BookAction({ book, userId }: BookTableProps) {
           }}
         />
       </IconButton>
-      <IconButton aria-label="delete">
+      <IconButton aria-label="delete" onClick={handleClickOpen}>
         <DeleteIcon
           sx={{
             color: red[500],
           }}
         />
       </IconButton>
+      <DeleteDialog open={open} handleClose={handleClose} bookId={book.id} />
     </>
   );
 }

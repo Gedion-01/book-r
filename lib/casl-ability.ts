@@ -7,8 +7,18 @@ export type AppAbility = Ability<
 
 // Define the Book type with ownerId
 type Book = {
+  id: string;
+  title: string;
+  author: string;
+  quantity: number;
+  status: string;
   ownerId: string;
-  // other properties...
+  rentPrice: number;
+  bookImageUrl: string;
+  isApproved: boolean;
+  createdAt: Date;
+  categoryId: string | null;
+  updatedAt: Date;
 };
 type Transaction = {
   ownerId: string;
@@ -20,11 +30,14 @@ export function defineAbilitiesFor(role: Role, user: { userId: string }) {
   switch (role) {
     case "ADMIN":
       can("manage", "all");
+      can("approve", "Book")
       break;
     case "OWNER":
       // Use 'ownerId' for Book and 'userId' for Transaction
+      can("update", "Book", { ownerId: user.userId } as Partial<Book>);
       can("manage", "Book", { ownerId: user.userId } as Partial<Book>);
-      can("read", "Transaction", { userId: user.userId } as Partial<Book>);
+      can("delete", "Book", { ownerId: user.userId } as Partial<Book>);
+      can("read", "Transaction", { ownerId: user.userId } as Partial<Book>);
       break;
     case "USER":
       can("read", "Book");

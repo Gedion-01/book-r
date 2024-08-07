@@ -154,7 +154,7 @@ export default function BookSearch({ options, books }: BookDialogProps) {
           </List>
         )}
       </Box>
-      <FormDialog options={options} books={books} />
+      <FormDialog options={options} existingBook={book} />
     </>
   );
 }

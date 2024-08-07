@@ -15,7 +15,15 @@ import { Book } from "@prisma/client";
 
 interface FormDialogProps {
   options: { label: string; value: string }[];
-  books: Book[];
+  existingBook: {
+    bookId?: string;
+    bookTitle: string;
+    authorName: string;
+    bookCategoryId: string;
+    bookQuantity?: string;
+    bookRentPrice?: string;
+    bookCoverImageUrl?: string;
+  };
 }
 
 // Define the Zod schema
@@ -25,7 +33,7 @@ const formSchema = z.object({
   bookCategoryId: z.string().min(1, "Category is required"),
 });
 
-export default function FormDialog({ options, books }: FormDialogProps) {
+export default function FormDialog({ options, existingBook }: FormDialogProps) {
   const { addBook, book } = useStore();
   const { openDialog, setOpenDialog } = useStore();
   const [selectedOption, setSelectedOption] = React.useState("");
@@ -67,10 +75,10 @@ export default function FormDialog({ options, books }: FormDialogProps) {
 
     // If validation passes, handle the form submission
     console.log(result.data);
-    addBook({ bookId: book?.bookId, ...result.data });
+    addBook({ bookId: book?.bookId, ...existingBook, ...result.data });
     handleClose();
   };
-  console.log(book);
+  console.log(book, existingBook);
 
   return (
     <React.Fragment>

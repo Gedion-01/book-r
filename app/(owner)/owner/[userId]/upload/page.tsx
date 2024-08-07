@@ -58,7 +58,7 @@ export default async function UploadPage({
           {" "}
           Upload New Book
         </Typography>
-        <BookForm categories={categories} books={books} />
+        <BookForm categories={categories} books={books} userId={userId} />
       </Box>
     </Box>
   );

@@ -18,6 +18,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { Book } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 const quantity = [
   { id: "1", name: "1" },
@@ -40,6 +41,7 @@ const formSchema = z.object({
 });
 
 interface BookFormProps {
+  userId: string;
   books: Book[];
   categories: {
     id: string;
@@ -47,14 +49,17 @@ interface BookFormProps {
   }[];
 }
 
-export default function BookForm({ categories, books }: BookFormProps) {
-  const { book } = useStore();
+export default function BookForm({ userId, categories, books }: BookFormProps) {
+  const router = useRouter();
+  const { book, addBook } = useStore();
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [rentPrice, setRentPrice] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  console.log(imageUrl);
 
   useEffect(() => {
     if (book) {
@@ -69,10 +74,10 @@ export default function BookForm({ categories, books }: BookFormProps) {
 
     // Construct the form data object
     const formData = {
+      ...book,
       rentPrice,
       bookQuantity: selectedOption,
       bookCoverImageUrl: imageUrl,
-      ...book,
     };
 
     // Validate the form data using Zod
@@ -97,6 +102,16 @@ export default function BookForm({ categories, books }: BookFormProps) {
       } else {
         toast.success("Book uploaded successfully");
       }
+      addBook({
+        bookTitle: "",
+        authorName: "",
+        bookCategoryId: "",
+        bookId: "",
+        bookQuantity: "",
+        bookRentPrice: "",
+        bookCoverImageUrl: "",
+      });
+      router.push(`/owner/${userId}`);
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -156,6 +171,7 @@ export default function BookForm({ categories, books }: BookFormProps) {
               label="Book Quantity"
               onChange={handleChange}
               error={!!errors.bookCategoryId}
+              helperText={errors.bookCategoryId}
             >
               {quantity.map((q) => (
                 <MenuItem key={q.id} value={q.name}>
@@ -195,7 +211,7 @@ export default function BookForm({ categories, books }: BookFormProps) {
             borderRadius: "20px",
           }}
         >
-          {isEditing  ? (
+          {isEditing ? (
             "Cancel"
           ) : (
             <>
@@ -249,7 +265,7 @@ export default function BookForm({ categories, books }: BookFormProps) {
               onChange={(url) => {
                 if (url) {
                   setImageUrl(url);
-                  setIsEditing(false)
+                  setIsEditing(false);
                 }
               }}
             />

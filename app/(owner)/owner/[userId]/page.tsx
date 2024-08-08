@@ -248,7 +248,7 @@ export default async function OwnerPage({
                     marginTop: "30px",
                   }}
                 >
-                   <PieChartWithCenterLabel data={data} />
+                  <PieChartWithCenterLabel data={data} />
                 </Box>
               </Box>
             </Box>
@@ -256,7 +256,9 @@ export default async function OwnerPage({
         </div>
         <div className="col-span-2 flex flex-col gap-4">
           {/* <!-- Live Book Status --> */}
-          <LiveBookStatus books={books} userId={userPayload.id} />
+          <Box sx={{ backgroundColor: "rgba(255, 255, 255, 1)" }}>
+            <LiveBookStatus userId={userPayload.id} />
+          </Box>
 
           {/* <!-- Additional Content --> */}
 

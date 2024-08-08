@@ -12,9 +12,11 @@ interface Book {
 
 interface StoreState {
   book: Book | null;
+  refreshKey: number;
   addBook: (book: Book) => void;
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
+  toggleRefresh: () => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -22,4 +24,6 @@ export const useStore = create<StoreState>((set) => ({
   addBook: (book) => set({ book }),
   openDialog: false,
   setOpenDialog: (open) => set({ openDialog: open }),
+  refreshKey: 0,
+  toggleRefresh: () => set(state => ({ refreshKey: state.refreshKey + 1 })),
 }));

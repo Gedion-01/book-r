@@ -11,7 +11,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useStore } from "@/store/store";
 
 interface AlertDialogProps {
   open: boolean;
@@ -20,6 +21,8 @@ interface AlertDialogProps {
 }
 
 export function DeleteDialog({ open, handleClose, bookId }: AlertDialogProps) {
+  const { toggleRefresh } = useStore();
+
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -30,6 +33,7 @@ export function DeleteDialog({ open, handleClose, bookId }: AlertDialogProps) {
       const res = await axios.delete(`/api/owner/delete/${bookId}`);
       toast.success("Book deleted successfully");
       router.refresh();
+      toggleRefresh()
     } catch (error) {
       toast.error("An error has occurred, please try again");
       console.log(error);

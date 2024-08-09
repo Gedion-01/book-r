@@ -31,13 +31,7 @@ export default async function OwnerPage({
     return redirect("/owner");
   }
 
-  const books = await prisma.book.findMany({
-    where: {
-      ownerId: userPayload.id,
-    },
-  });
-
-  const data = await getBooksCountByCategoryForUser(userPayload.id);
+  const data = await getBooksCountByCategoryForUser(userPayload.id, userPayload.role);
 
   return (
     <>
@@ -248,7 +242,7 @@ export default async function OwnerPage({
                     marginTop: "30px",
                   }}
                 >
-                  <PieChartWithCenterLabel data={data} />
+                  <PieChartWithCenterLabel data={data!} />
                 </Box>
               </Box>
             </Box>

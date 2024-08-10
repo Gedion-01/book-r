@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import React, { useMemo, useState, useEffect } from "react";
 import {
   MaterialReactTable,
@@ -7,18 +8,14 @@ import {
   type MRT_SortingState,
 } from "material-react-table";
 import { Box, Typography } from "@mui/material";
-// import BookAction from "./book-action";
-// import { Book } from "@prisma/client";
-import axios from "axios";
+
 import { useStore } from "@/store/store";
 
 type BookStatus = "RENTED" | "FREE";
 
-interface LiveBookStatusProps {
-  userId: string;
-}
-
 interface Book {
+  no: number;
+  bookNo: number;
   id: string;
   title: string;
   author: string;
@@ -75,9 +72,74 @@ const LiveBookStatus = () => {
 
   const columns = useMemo<MRT_ColumnDef<Book>[]>(
     () => [
-      { header: "No.", accessorKey: "no", size: 50 },
-      { header: "Book no.", accessorKey: "bookNo", size: 100 },
-      { header: "Owner", accessorKey: "owner.email", size: 250 },
+      {
+        header: "No.",
+        accessorKey: "no",
+        size: 50,
+        Cell: ({ cell }) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 400,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(26, 25, 25, 1)",
+              }}
+            >
+              {cell.row.original.no}
+            </Typography>
+          );
+        },
+      },
+      {
+        header: "Book no.",
+        accessorKey: "bookNo",
+        size: 50,
+        Cell: ({ cell }) => {
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: 400,
+                  fontSize: "16px",
+                  lineHeight: "19.36px",
+                  color: "rgba(26, 25, 25, 1)",
+                  bgcolor: "red",
+                  padding: "4px 12px",
+                  backgroundColor: "rgba(153, 153, 153, 0.1)",
+                  borderRadius: "4px",
+                }}
+              >
+                {cell.row.original.bookNo}
+              </Typography>
+            </Box>
+          );
+        },
+      },
+      {
+        header: "Owner",
+        accessorKey: "owner.email",
+        size: 250,
+        Cell: ({ cell }) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 400,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(26, 25, 25, 1)",
+              }}
+            >
+              {cell.row.original.owner.email}
+            </Typography>
+          );
+        },
+      },
       {
         header: "Status",
         accessorKey: "status",
@@ -109,7 +171,7 @@ const LiveBookStatus = () => {
                   fontSize: "14px", // Example font size
                   lineHeight: "18px",
                   marginTop: "2px",
-                  color: "rgba(101, 101, 117, 1)"
+                  color: "rgba(101, 101, 117, 1)",
                 }}
               >
                 {status}
@@ -140,7 +202,7 @@ const LiveBookStatus = () => {
                   fontSize: "14px", // Example font size
                   lineHeight: "18px",
                   marginTop: "2px",
-                  color: "rgba(101, 101, 117, 1)"
+                  color: "rgba(101, 101, 117, 1)",
                 }}
               >
                 {status}
@@ -154,29 +216,20 @@ const LiveBookStatus = () => {
         accessorKey: "rentPrice",
         size: 100,
         Cell: ({ cell }) => {
-          return (<Typography
-          sx={{
-            fontWeight: 300, // Example font weight
-            fontSize: "14px", // Example font size
-            lineHeight: "18px",
-            marginTop: "2px",
-            color: "rgba(101, 101, 117, 1)"
-          }}
-        >
-          {cell.row.original.rentPrice} Birr
-        </Typography>)
+          return (
+            <Typography
+              sx={{
+                fontWeight: 300,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(101, 101, 117, 1)",
+              }}
+            >
+              {cell.row.original.rentPrice}
+            </Typography>
+          );
         },
       },
-      // {
-      //   header: "Action",
-      //   id: "actions",
-      //   size: 100,
-      //   Cell: ({ row }) => (
-      //     <>
-      //       <BookAction book={row.original} userId={userId} />
-      //     </>
-      //   ),
-      // },
     ],
     []
   );

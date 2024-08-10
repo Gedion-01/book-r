@@ -18,10 +18,12 @@ import BookAction from "./book-action";
 type UserStatus = "ACTIVE" | "DISABLED";
 
 interface Owner {
+  no: number;
   id: string;
   email: string;
   totalBooks: number;
   location: string;
+  phone: string;
   status: UserStatus;
   isApproved: boolean;
 }
@@ -66,7 +68,7 @@ const ListOfOwners = () => {
         userStatus: status,
       });
       toggleRefresh();
-      toast.success("Status updated");
+      toast.success("User status updated");
     } catch (error) {
       toast.error("An error has occured");
     } finally {
@@ -82,16 +84,90 @@ const ListOfOwners = () => {
 
   const columns = useMemo<MRT_ColumnDef<Owner>[]>(
     () => [
-      { header: "No.", accessorKey: "no", size: 50 },
-      { header: "Owner", accessorKey: "email", size: 100 },
-      { header: "Upload", accessorKey: "totalBooks", size: 150 },
-      { header: "Location", accessorKey: "location", size: 100 },
+      {
+        header: "No.",
+        accessorKey: "no",
+        size: 50,
+        Cell: ({ cell }) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 400,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(26, 25, 25, 1)",
+              }}
+            >
+              {cell.row.original.no}
+            </Typography>
+          );
+        },
+      },
+      {
+        header: "Owner",
+        accessorKey: "email",
+        size: 100,
+        Cell: ({ cell }) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 400,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(26, 25, 25, 1)",
+              }}
+            >
+              {cell.row.original.email}
+            </Typography>
+          );
+        },
+      },
+      {
+        header: "Upload",
+        accessorKey: "totalBooks",
+        size: 150,
+        Cell: ({ cell }) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 300,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(101, 101, 117, 1)",
+              }}
+            >
+              {cell.row.original.totalBooks > 1
+                ? `${cell.row.original.totalBooks} Books`
+                : `${cell.row.original.totalBooks} Book`}
+            </Typography>
+          );
+        },
+      },
+      {
+        header: "Location",
+        accessorKey: "location",
+        size: 100,
+        Cell: ({ cell }) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 300,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(101, 101, 117, 1)",
+              }}
+            >
+              {cell.row.original.location}
+            </Typography>
+          );
+        },
+      },
       {
         header: "Status",
         accessorKey: "status",
         size: 200,
         muiTableHeadCellProps: {
-          align: "center", // Center align the header
+          align: "center",
         },
         Cell: ({ cell }) => {
           const userId = cell.row.original.id;
@@ -236,10 +312,16 @@ const ListOfOwners = () => {
         id: "actions",
         size: 100,
         Cell: ({ row }) => {
-          const userId = row.original.id;
+          const { id, email, location, phone } = row.original;
           return (
             <Box>
-              <BookAction userId={userId} isApproved={row.original.isApproved} />
+              <BookAction
+                userId={id}
+                email={email}
+                location={location}
+                phone={phone}
+                isApproved={row.original.isApproved}
+              />
             </Box>
           );
         },

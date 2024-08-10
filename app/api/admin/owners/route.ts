@@ -98,6 +98,7 @@ export async function GET(request: NextApiRequest) {
       email: user.email,
       totalBooks: user.books.length,
       location: user.location,
+      phone: user.phone,
       status: user.status,
       isApproved: user.isApproved,
     }));

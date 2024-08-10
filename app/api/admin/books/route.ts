@@ -73,6 +73,8 @@ export async function GET(request: NextApiRequest) {
         OR: [
           { title: { contains: filter, mode: "insensitive" } },
           { author: { contains: filter, mode: "insensitive" } },
+          { owner: { email: { contains: filter, mode: "insensitive" } } },
+          { category: { name: { contains: filter, mode: "insensitive" } } },
         ],
       },
       orderBy,
@@ -82,6 +84,12 @@ export async function GET(request: NextApiRequest) {
         owner: {
           select: {
             email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
           },
         },
       },

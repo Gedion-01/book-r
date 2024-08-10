@@ -37,7 +37,7 @@ model User {
   password     String
   role         Role          @default(USER)
   books        Book[]        @relation("OwnerBooks")
-  transactions Transaction[]
+  transactions Transaction[] @relation("TransactionOwner")
   status       UserStatus    @default(ACTIVE)
   isApproved   Boolean       @default(false)
   createdAt    DateTime      @default(now())
@@ -54,7 +54,7 @@ model Book {
   ownerId      String
   rentPrice    Float
   bookImageUrl String
-  transactions Transaction[]
+  transactions Transaction[] @relation("BookToTransaction")
   isApproved   Boolean       @default(false)
   createdAt    DateTime      @default(now())
 
@@ -72,11 +72,14 @@ model Category {
 
 model Transaction {
   id         String    @id @default(cuid())
-  book       Book      @relation(fields: [bookId], references: [id])
+  type       String
   bookId     String
-  user       User      @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id], name: "TransactionOwner") // Clarify the relationship
   userId     String
-  rentPrice  Float
-  rentedAt   DateTime  @default(now())
+  price      Float
+  rentedAt   DateTime? @default(now())
   returnedAt DateTime?
+  book       Book      @relation("BookToTransaction", fields: [bookId], references: [id])
+
+  @@unique([bookId, userId], name: "UniqueBookRental")
 }

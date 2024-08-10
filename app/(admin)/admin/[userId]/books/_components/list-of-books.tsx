@@ -8,8 +8,7 @@ import {
 } from "material-react-table";
 import { Box, FormControlLabel, Switch, Typography } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
-// import BookAction from "./book-action";
-// import { Book } from "@prisma/client";
+
 import axios from "axios";
 import { useStore } from "@/store/store";
 import toast from "react-hot-toast";
@@ -17,11 +16,9 @@ import toast from "react-hot-toast";
 type BookStatus = "RENTED" | "FREE";
 type UserStatus = "ACTIVE" | "DISABLED";
 
-interface LiveBookStatusProps {
-  userId: string;
-}
 
 interface Book {
+  no: number;
   id: string;
   title: string;
   author: string;
@@ -59,7 +56,7 @@ const ListOfBooks = () => {
 
     const fetchBooks = async () => {
       try {
-        const response = await axios.get("/api/admin/owners", {
+        const response = await axios.get("/api/admin/books", {
           params: {
             page: pageIndex,
             size: pageSize,
@@ -77,15 +74,15 @@ const ListOfBooks = () => {
     fetchBooks();
   }, [pageIndex, pageSize, sorting, globalFilter, refreshKey]);
 
-  const handleSwitchChange = async (userId: string, status: UserStatus) => {
+  const handleSwitchChange = async (bookId: string, status: boolean) => {
     try {
       setIsLoading(true);
-      const res = await axios.patch("/api/admin/changeuserstatus", {
-        toBeUpdatedUserId: userId,
-        userStatus: status,
+      const res = await axios.patch("/api/admin/approvebook", {
+        toBeUpdatedBookId: bookId,
+        isApproved: !status,
       });
       toggleRefresh();
-      toast.success("Status updated");
+      toast.success("Book status updated");
     } catch (error) {
       toast.error("An error has occured");
     } finally {
@@ -101,22 +98,97 @@ const ListOfBooks = () => {
 
   const columns = useMemo<MRT_ColumnDef<Book>[]>(
     () => [
-      { header: "No.", accessorKey: "no", size: 50 },
-      { header: "Author", accessorKey: "author", size: 100 },
-      { header: "Owner", accessorKey: "owner.email", size: 150 },
-      { header: "Category", accessorKey: "category.name", size: 150 },
-      { header: "Book Name", accessorKey: "title", size: 150 },
+      { header: "No.", accessorKey: "no", size: 50,
+        Cell: ({cell}) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '19.36px',
+                color: "rgba(26, 25, 25, 1)"
+              }}
+            >
+              {cell.row.original.no}
+            </Typography>
+          );
+        }
+       },
+      { header: "Author", accessorKey: "author", size: 100, 
+        Cell: ({cell}) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '19.36px',
+                color: "rgba(26, 25, 25, 1)"
+              }}
+            >
+              {cell.row.original.author}
+            </Typography>
+          );
+        }
+       },
+      { header: "Owner", accessorKey: "owner.email", size: 150, 
+        Cell: ({cell}) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '19.36px',
+                color: "rgba(26, 25, 25, 1)"
+              }}
+            >
+              {cell.row.original.owner.email}
+            </Typography>
+          );
+        }
+       },
+      { header: "Category", accessorKey: "category.name", size: 150, 
+        Cell: ({cell}) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 300,
+                fontSize: '16px',
+                lineHeight: '19.36px',
+                color: 'rgba(101, 101, 117, 1)',
+              }}
+            >
+              {cell.row.original.category.name}
+            </Typography>
+          );
+        }
+       },
+      { header: "Book Name", accessorKey: "title", size: 150,
+        Cell: ({cell}) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 300,
+                fontSize: '16px',
+                lineHeight: '19.36px',
+                color: 'rgba(101, 101, 117, 1)',
+              }}
+            >
+              {cell.row.original.title}
+            </Typography>
+          );
+        }
+       },
       {
         header: "Status",
-        accessorKey: "owner.status",
+        accessorKey: "isApproved",
         size: 200,
         muiTableHeadCellProps: {
           align: "center", // Center align the header
         },
         Cell: ({ cell }) => {
-          const userId = cell.row.original.owner.id;
-          const status: UserStatus = cell.row.original.owner.status;
-          return status === "ACTIVE" ? (
+          const bookId = cell.row.original.id;
+          const status = cell.row.original.isApproved;
+          return status === true ? (
             <Box
               sx={{
                 display: "flex",
@@ -138,8 +210,8 @@ const ListOfBooks = () => {
                 control={
                   <Switch
                     disabled={isLoading}
-                    checked={status === "ACTIVE"}
-                    onChange={(event) => handleSwitchChange(userId, "DISABLED")}
+                    checked={status === true}
+                    onChange={(event) => handleSwitchChange(bookId, status)}
                     sx={{
                       width: "71px",
                       "& .MuiSwitch-switchBase.Mui-checked": {
@@ -165,7 +237,7 @@ const ListOfBooks = () => {
                       color: "rgba(0, 128, 0, 1)",
                     }}
                   >
-                    {status === "ACTIVE" && (
+                    {status === true && (
                       <>
                         <CheckIcon
                           sx={{
@@ -204,8 +276,8 @@ const ListOfBooks = () => {
                 control={
                   <Switch
                     disabled={isLoading}
-                    checked={status === "DISABLED" && false}
-                    onChange={(event) => handleSwitchChange(userId, "ACTIVE")}
+                    checked={status === false && false}
+                    onChange={(event) => handleSwitchChange(bookId, status)}
                     sx={{
                       width: "70px",
                       "& .MuiSwitch-switchBase.Mui-checked": {
@@ -231,7 +303,7 @@ const ListOfBooks = () => {
                       color: "rgba(128, 0, 0, 1)",
                     }}
                   >
-                    {status === "DISABLED" && (
+                    {status === false && (
                       <>
                         <CheckIcon
                           sx={{
@@ -299,8 +371,8 @@ const ListOfBooks = () => {
         }}
         muiTableContainerProps={{
           sx: {
-            maxWidth: "1300px"
-          }
+            maxWidth: "1300px",
+          },
         }}
         muiTableHeadCellProps={{
           sx: {
@@ -310,7 +382,6 @@ const ListOfBooks = () => {
             color: "rgba(101, 101, 117, 1)", // Example text color
           },
         }}
-        
         renderTopToolbarCustomActions={() => (
           <Typography
             sx={{

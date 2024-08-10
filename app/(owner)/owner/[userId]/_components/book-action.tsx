@@ -1,6 +1,6 @@
 "use client";
 
-import { IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { red } from "@mui/material/colors";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -45,7 +45,12 @@ export default function BookAction({ book, userId }: BookTableProps) {
     router.push(`/owner/${userId}/upload`);
   }
   return (
-    <>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+      }}
+    >
       <IconButton aria-label="edit">
         <EditIcon
           onClick={() =>
@@ -72,6 +77,6 @@ export default function BookAction({ book, userId }: BookTableProps) {
         />
       </IconButton>
       <DeleteDialog open={open} handleClose={handleClose} bookId={book.id} />
-    </>
+    </Box>
   );
 }

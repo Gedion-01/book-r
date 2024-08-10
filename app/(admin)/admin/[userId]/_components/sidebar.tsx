@@ -76,12 +76,12 @@ export default function Sidebar({ userId }: PageProps) {
 
           <SideBarItem
             title="Books"
-            path={`/admin/books`}
+            path={`/admin/${userId}/books`}
             image="https://res.cloudinary.com/dcrldqkrc/image/upload/v1723064603/book_qmx3vj.svg"
           />
           <SideBarItem
             title="Owners"
-            path={``}
+            path={`/admin/${userId}/owners`}
             image="https://res.cloudinary.com/dcrldqkrc/image/upload/v1723198704/Book-R/qwwnaklc218ry0yawloz.svg"
           />
           <SideBarItem

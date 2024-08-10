@@ -38,7 +38,8 @@ model User {
   role         Role          @default(USER)
   books        Book[]        @relation("OwnerBooks")
   transactions Transaction[]
-  status       UserStatus
+  status       UserStatus    @default(ACTIVE)
+  isApproved   Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -48,11 +49,11 @@ model Book {
   title        String
   author       String
   quantity     Int
-  status       BookStatus
+  status       BookStatus    @default(FREE)
   owner        User          @relation("OwnerBooks", fields: [ownerId], references: [id])
   ownerId      String
   rentPrice    Float
-  bookImageUrl    String
+  bookImageUrl String
   transactions Transaction[]
   isApproved   Boolean       @default(false)
   createdAt    DateTime      @default(now())
@@ -64,8 +65,8 @@ model Book {
 }
 
 model Category {
-  id      String @id @default(uuid())
-  name    String @unique
+  id    String @id @default(uuid())
+  name  String @unique
   books Book[]
 }
 

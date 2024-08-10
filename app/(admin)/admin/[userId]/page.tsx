@@ -15,34 +15,35 @@ export default async function OwnerPage({
   if (!userPayload) {
     return redirect("/admin");
   }
-  
-  const ability = defineAbilitiesFor(userPayload.role, { userId: userPayload.id });
+
+  const ability = defineAbilitiesFor(userPayload.role, {
+    userId: userPayload.id,
+  });
 
   if (!ability.can("manage", "all")) {
     return redirect("/admin");
   }
-  
 
   return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full">
-        {/* <!-- Stats Card --> */}
-        <ThisMonthStatus userPayload={userPayload} />
-        <div className="col-span-2 flex flex-col gap-4">
-          {/* <!-- Live Book Status --> */}
-          <Box sx={{ backgroundColor: "rgba(255, 255, 255, 1)" }}>
-            <LiveBookStatus userId={userPayload.id} />
-          </Box>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full">
+      {/* <!-- Stats Card --> */}
+      <ThisMonthStatus userPayload={userPayload} />
+      <div className="col-span-2 flex flex-col gap-4">
+        {/* <!-- Live Book Status --> */}
+        <Box sx={{ backgroundColor: "rgba(255, 255, 255, 1)" }}>
+          <LiveBookStatus />
+        </Box>
 
-          {/* <!-- Additional Content --> */}
+        {/* <!-- Additional Content --> */}
 
-          <div className="col-span-2 bg-white p-4 rounded shadow-md">
-            <h3 className="text-xl font-semibold">Earning Summary</h3>
-            <div className="flex justify-center items-center">
-              {/* <!-- Placeholder for graph --> */}
-              {/* <EarningSummaryChart /> */}
-            </div>
+        <div className="col-span-2 bg-white p-4 rounded shadow-md">
+          <h3 className="text-xl font-semibold">Earning Summary</h3>
+          <div className="flex justify-center items-center">
+            {/* <!-- Placeholder for graph --> */}
+            {/* <EarningSummaryChart /> */}
           </div>
         </div>
       </div>
+    </div>
   );
 }

@@ -279,6 +279,9 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
         if (role === "OWNER") {
           router.push(`/owner/${res.data.id}`);
         }
+        if( role === "USER"){
+          router.push(`/user/${res.data.id}`);
+        }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 400) {
           toast.error("Invalid email or password");

@@ -21,12 +21,11 @@ interface BookDialogProps {
 }
 
 export default function BookSearch({ options, books }: BookDialogProps) {
-  const { book, addBook } = useStore();
+  const { book, addBook,} = useStore();
   const [showList, setShowList] = React.useState(false);
   const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout | null>(null);
-  const { setOpenDialog } = useStore();
-
-  // Check if the `book` object exists in the `books` array
+  const [isDialogOpened, setDialogOpen] = React.useState(false)
+  
   const bookExists = books.some(
     (existingBook) => existingBook.id === book?.bookId
   );
@@ -68,6 +67,13 @@ export default function BookSearch({ options, books }: BookDialogProps) {
     }
   }
 
+  function openDialog() {
+    setDialogOpen(true)
+  }
+  function closeDialog() {
+    setDialogOpen(false)
+  }
+
   return (
     <>
       <Box
@@ -104,7 +110,7 @@ export default function BookSearch({ options, books }: BookDialogProps) {
               <button
                 className="w-full"
                 onClick={() => {
-                  setOpenDialog(true);
+                  setDialogOpen(true)
                   onClick({
                     bookTitle: book.title,
                     authorName: book.author,
@@ -124,7 +130,7 @@ export default function BookSearch({ options, books }: BookDialogProps) {
             {!bookExists && book && <Item title={book.bookTitle} />}
             <Button
               onClick={() => {
-                setOpenDialog(true);
+                openDialog()
                 addBook({
                   bookTitle: "",
                   authorName: "",
@@ -154,7 +160,7 @@ export default function BookSearch({ options, books }: BookDialogProps) {
           </List>
         )}
       </Box>
-      <FormDialog options={options} existingBook={book} />
+      <FormDialog options={options} existingBook={book!} open={isDialogOpened} setCloseDialog={closeDialog}  />
     </>
   );
 }

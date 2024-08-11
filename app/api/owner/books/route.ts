@@ -29,14 +29,13 @@ export async function GET(request: NextApiRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    // console.log("searchParams", searchParams);
 
     const page = searchParams.get("page") || "0";
     const size = searchParams.get("size") || "10";
     const sort = searchParams.get("sort") || "title";
     const filter = searchParams.get("filter") || "";
 
-    console.log("page", page, "size", size, "sort", sort, "filter", filter);
+    console.log("page", page, "size", size, "sort", sort, "filter");
 
     const validSortFields = [
       "id",
@@ -79,6 +78,23 @@ export async function GET(request: NextApiRequest) {
       orderBy,
       skip: Number(page) * Number(size),
       take: Number(size),
+      select: {
+        id: true,
+        ownerId: true,
+        title: true,
+        rentPrice: true,
+        quantity: true,
+        bookImageUrl: true,
+        author: true,
+        categoryId: true,
+        
+        copies: {
+          select: {
+            id: true,
+            status: true,
+          },
+        },
+      },
     });
 
     const totalBooks = await prisma.book.count({
@@ -91,7 +107,20 @@ export async function GET(request: NextApiRequest) {
       },
     });
 
-    return NextResponse.json({ books, totalBooks });
+    // Format the response to flatten the copies into the main object
+    const formattedBooks = books.map(book => 
+      book.copies.map(copy => ({
+        id: book.id,
+        ownerId: book.ownerId,
+        title: book.title,
+        rentPrice: book.rentPrice,
+        copyId: copy.id,
+        status: copy.status,
+        book: book
+      }))
+    ).flat();
+
+    return NextResponse.json({ books: formattedBooks, totalBooks });
   } catch (error) {
     console.error("Error fetching books:", error);
     return NextResponse.json(

@@ -24,6 +24,8 @@ interface FormDialogProps {
     bookRentPrice?: string;
     bookCoverImageUrl?: string;
   };
+  open: boolean;
+  setCloseDialog: () => void
 }
 
 // Define the Zod schema
@@ -33,9 +35,8 @@ const formSchema = z.object({
   bookCategoryId: z.string().min(1, "Category is required"),
 });
 
-export default function FormDialog({ options, existingBook }: FormDialogProps) {
+export default function FormDialog({ options, existingBook, open, setCloseDialog }: FormDialogProps) {
   const { addBook, book } = useStore();
-  const { openDialog, setOpenDialog } = useStore();
   const [selectedOption, setSelectedOption] = React.useState("");
   const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
 
@@ -47,7 +48,7 @@ export default function FormDialog({ options, existingBook }: FormDialogProps) {
   }, [book]);
 
   const handleClose = () => {
-    setOpenDialog(false);
+    setCloseDialog()
   };
 
   const handleChange = (event: any) => {
@@ -78,13 +79,13 @@ export default function FormDialog({ options, existingBook }: FormDialogProps) {
     addBook({ bookId: book?.bookId, ...existingBook, ...result.data });
     handleClose();
   };
-  console.log(book, existingBook);
+  console.log(book, existingBook, open)
 
   return (
     <React.Fragment>
       <Dialog
-        open={openDialog}
-        onClose={handleClose}
+        open={open}
+        onClose={() => handleClose()}
         PaperProps={{
           component: "form",
           onSubmit: handleSubmit,

@@ -7,13 +7,6 @@ import BookForm from "./_components/book.form";
 import getUserId from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-// Define the Zod schema
-const formSchema = z.object({
-  bookName: z.string().min(1, "Book Name is required"),
-  authorName: z.string().min(1, "Author Name is required"),
-  category: z.string().min(1, "Category is required"),
-});
-
 export default async function UploadPage({
   params,
 }: {

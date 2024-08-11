@@ -29,7 +29,6 @@ export async function DELETE(
     });
 
     console.log("user", user);
-    
 
     if (!user) {
       return new NextResponse("User not found", { status: 404 });
@@ -51,13 +50,32 @@ export async function DELETE(
 
     ForbiddenError.from(ability).throwUnlessCan("update", "Book");
 
-    const deletedBook = await prisma.book.delete({
-      where: {
-        id: params.bookId,
-      },
+    await prisma.$transaction(async (prisma) => {
+      const copiesCount = await prisma.bookCopy.count({
+        where: {
+          bookId: params.bookId,
+        },
+      });
+      if (copiesCount > 0) {
+        // Delete the book copies
+        await prisma.bookCopy.deleteMany({
+          where: {
+            bookId: params.bookId,
+          },
+        });
+      }
+
+      // Delete the book
+      await prisma.book.delete({
+        where: {
+          id: params.bookId,
+        },
+      });
     });
 
-    return NextResponse.json(deletedBook);
+    return NextResponse.json({
+      message: "Book and its copies deleted successfully",
+    });
   } catch (error) {
     console.log("DELETE_BOOK]", error);
     if (error instanceof ForbiddenError) {

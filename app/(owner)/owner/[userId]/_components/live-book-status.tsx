@@ -8,19 +8,30 @@ import {
 } from "material-react-table";
 import { Box, Typography } from "@mui/material";
 import BookAction from "./book-action";
-import { Book } from "@prisma/client";
+
 import axios from "axios";
 import { useStore } from "@/store/store";
+import { Book } from "@prisma/client";
 
-type BookStatus = "RENTED" | "FREE"
+type BookStatus = "RENTED" | "FREE";
 
 interface LiveBookStatusProps {
   userId: string;
 }
 
+interface LBookStatus {
+  id: string;
+  ownerId: string;
+  title: string;
+
+  status: BookStatus;
+  rentPrice: number;
+  book: Book;
+}
+
 const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
   const { refreshKey } = useStore();
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<LBookStatus[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
@@ -40,6 +51,7 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
           },
         });
         setBooks(response.data.books);
+        console.log(response.data.books);
       } catch (error) {
         console.error("Error fetching books:", error);
       }
@@ -54,7 +66,7 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
     bookNo: index + 1 + pageIndex * pageSize,
   }));
 
-  const columns = useMemo<MRT_ColumnDef<Book>[]>(
+  const columns = useMemo<MRT_ColumnDef<LBookStatus>[]>(
     () => [
       { header: "No.", accessorKey: "no", size: 50 },
       { header: "Book no.", accessorKey: "bookNo", size: 100 },
@@ -117,7 +129,7 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
         size: 100,
         Cell: ({ row }) => (
           <>
-            <BookAction book={row.original} userId={userId} />
+            <BookAction book={row.original.book} userId={userId} />
           </>
         ),
       },
@@ -126,7 +138,7 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
   );
 
   return (
-    <div className="px-[28px] pt-[32px]">
+    <div className="px-[28px] pt-[32px] rounded-[16px] overflow-hidden bg-white">
       <MaterialReactTable
         columns={columns}
         data={booksWithNumbers}
@@ -148,12 +160,7 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
         muiTableBodyCellProps={{
           sx: {
             boxShadow: "none",
-            paddingY: 0,
-          },
-        }}
-        muiTableHeadCellProps={{
-          sx: {
-            boxShadow: 100,
+            paddingY: "16px",
           },
         }}
         muiTablePaperProps={{
@@ -172,16 +179,29 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
             boxShadow: 0,
           },
         }}
+        muiTableContainerProps={{
+          sx: {
+            maxWidth: "1300px",
+          },
+        }}
+        muiTableHeadCellProps={{
+          sx: {
+            fontWeight: 300, // Example font weight
+            fontSize: "14px", // Example font size
+            lineHeight: "18px",
+            color: "rgba(101, 101, 117, 1)", // Example text color
+          },
+        }}
         renderTopToolbarCustomActions={() => (
           <Typography
             sx={{
               fontWeight: "600",
               fontSize: "16px",
               marginTop: "52px",
-              color:"rgba(26, 25, 25, 1)"
+              color: "rgba(26, 25, 25, 1)",
             }}
           >
-            Book Status Table
+            List of books
           </Typography>
         )}
       />

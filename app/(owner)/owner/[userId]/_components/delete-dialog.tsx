@@ -33,7 +33,7 @@ export function DeleteDialog({ open, handleClose, bookId }: AlertDialogProps) {
       const res = await axios.delete(`/api/owner/delete/${bookId}`);
       toast.success("Book deleted successfully");
       router.refresh();
-      toggleRefresh()
+      toggleRefresh();
     } catch (error) {
       toast.error("An error has occurred, please try again");
       console.log(error);
@@ -57,7 +57,8 @@ export function DeleteDialog({ open, handleClose, bookId }: AlertDialogProps) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            This action cannot be undone
+            This action will permanently delete the book and its copies. This
+            action cannot be undone. Are you sure you want to proceed?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

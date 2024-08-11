@@ -77,20 +77,65 @@ export async function PATCH(request: Request) {
       if (exitingBook) {
         ForbiddenError.from(ability).throwUnlessCan("update", "Book");
 
-        const updatedBook = await prisma.book.update({
-          where: {
-            id: exitingBook.id,
-          },
-          data: {
-            title: bookTitle,
-            author: authorName,
-            quantity: Number(bookQuantity),
-            status: "FREE",
-            ownerId: userId,
-            rentPrice: Number(rentPrice),
-            bookImageUrl: bookCoverImageUrl,
-            categoryId: bookCategoryId,
-          },
+        const updatedBook = await prisma.$transaction(async (prisma) => {
+          // Update the book details
+          const book = await prisma.book.update({
+            where: {
+              id: exitingBook.id,
+            },
+            data: {
+              title: bookTitle,
+              author: authorName,
+              quantity: Number(bookQuantity),
+              status: "FREE",
+              ownerId: userId,
+              rentPrice: Number(rentPrice),
+              bookImageUrl: bookCoverImageUrl,
+              categoryId: bookCategoryId,
+            },
+          });
+
+          // Get the current number of copies
+          const currentCopiesCount = await prisma.bookCopy.count({
+            where: {
+              bookId: exitingBook.id,
+            },
+          });
+
+          const newQuantity = Number(bookQuantity);
+
+          if (newQuantity > currentCopiesCount) {
+            // Create additional copies
+            const copiesToCreate = newQuantity - currentCopiesCount;
+            await prisma.bookCopy.createMany({
+              data: Array.from({ length: copiesToCreate }, () => ({
+                bookId: exitingBook.id,
+                status: "FREE",
+              })),
+            });
+          } else if (newQuantity < currentCopiesCount) {
+            // Delete excess copies
+            const copiesToDelete = currentCopiesCount - newQuantity;
+            const copies = await prisma.bookCopy.findMany({
+              where: {
+                bookId: exitingBook.id,
+                status: "FREE",
+              },
+              take: copiesToDelete,
+            });
+
+            const copyIdsToDelete = copies.map((copy) => copy.id);
+
+            await prisma.bookCopy.deleteMany({
+              where: {
+                id: {
+                  in: copyIdsToDelete,
+                },
+              },
+            });
+          }
+
+          return book;
         });
 
         return NextResponse.json("Book updated successfully", { status: 200 });
@@ -108,6 +153,9 @@ export async function PATCH(request: Request) {
         rentPrice: Number(rentPrice),
         bookImageUrl: bookCoverImageUrl,
         categoryId: bookCategoryId,
+        copies: {
+          create: Array.from({ length: bookQuantity }, () => ({})),
+        },
       },
     });
 

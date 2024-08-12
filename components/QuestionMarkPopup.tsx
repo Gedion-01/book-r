@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Fab, Popover, List, ListItem, ListItemText } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import Link from "next/link";
 
 const QuestionMarkPopup: React.FC = () => {
+  const pathname = usePathname()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -18,6 +20,12 @@ const QuestionMarkPopup: React.FC = () => {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+
+  const visibleRoutes = ["/admin", "/owner", "/"];
+
+  if (!visibleRoutes.includes(pathname)) {
+    return null;
+  }
 
   return (
     <>

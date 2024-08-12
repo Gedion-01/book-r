@@ -1,7 +1,7 @@
 {
     "build": {
       "env": {
-        "DATABASE_URL": "your-database-url"
+        "DATABASE_URL": "postgres://avnadmin:AVNS_OfEVZHtfqGC5a0GGNHd@pg-20ecd7b7-gediongedion300-092f.k.aivencloud.com:19736/defaultdb?sslmode=require"
       },
       "commands": {
         "build": "prisma generate && next build"

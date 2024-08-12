@@ -12,6 +12,7 @@ import { getBooksCountByCategoryForUser } from "@/lib/get-books-by-category";
 import { Box, Divider, Typography } from "@mui/material";
 import { red } from "@mui/material/colors";
 import { ThisMonthStatus } from "./_components/this-month-status";
+import { earningSummary } from "@/actions/owner/earning-summary";
 
 export default async function OwnerPage({
   params,
@@ -32,26 +33,25 @@ export default async function OwnerPage({
     return redirect("/owner");
   }
 
-  const data = await getBooksCountByCategoryForUser(userPayload.id, userPayload.role);
+  const data = await earningSummary(userPayload.id);
+  console.log(data);
 
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full">
-        {/* <!-- Stats Card --> */}
         <ThisMonthStatus userPayload={userPayload} />
         <div className="col-span-2 flex flex-col gap-4">
-          {/* <!-- Live Book Status --> */}
-          <Box sx={{  }}>
+          <Box sx={{}}>
             <LiveBookStatus userId={userPayload.id} />
           </Box>
 
-          {/* <!-- Additional Content --> */}
-
-          <div className="col-span-2 bg-white p-4 rounded shadow-md">
-            <h3 className="text-xl font-semibold">Earning Summary</h3>
+          <div className="col-span-2 bg-white p-4 rounded-[14px] shadow-md">
             <div className="flex justify-center items-center">
-              {/* <!-- Placeholder for graph --> */}
-              <EarningSummaryChart />
+              <EarningSummaryChart
+                data={data}
+                title="Earning Summary"
+                subtitle="Mar 2022 - Oct 2024"
+              />
             </div>
           </div>
         </div>

@@ -28,10 +28,19 @@ const EarningSummaryChart: React.FC<EarningSummaryChartProps> = ({
   return (
     <Paper
       elevation={3}
-      sx={{ p: 3, borderRadius: "14px", width: "100%", boxShadow: 0 }}
+      sx={{ p: 3, borderRadius: 2, width: "100%", boxShadow: 0 }}
     >
-      <Box mb={2} sx={{}}>
-        <Typography variant="h6">{title}</Typography>
+      <Box mb={2} sx={{display: "flex", flexDirection: "row", flexWrap: "wrap"}}>
+        <Typography
+          sx={{
+            fontWeight: "600",
+            fontSize: "16px",
+            marginTop: "52px",
+            color: "rgba(26, 25, 25, 1)",
+          }}
+        >
+          {title}
+        </Typography>
         <Typography variant="subtitle2" color="textSecondary">
           {subtitle}
         </Typography>

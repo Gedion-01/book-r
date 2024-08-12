@@ -1,22 +1,20 @@
-"use client";
+import { Box } from "@mui/material";
 
-import { Box, ListItem } from "@mui/material";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import SideBarItem from "./link-items";
 import Image from "next/image";
+import LogOutButton from "./logout-button";
+import LogInAsBookOwner from "./login-as-book-owner";
 
 interface PageProps {
   userId: string;
 }
 
 export default function Sidebar({ userId }: PageProps) {
-  const pathname = usePathname();
-
   return (
     <Box
       sx={{
-        display: "flex",
+        display: { xs: "none", md: "flex" },
+
         flexDirection: "column",
         width: "279px",
         backgroundColor: "#171B36",
@@ -115,18 +113,10 @@ export default function Sidebar({ userId }: PageProps) {
             path={``}
             image="https://res.cloudinary.com/dcrldqkrc/image/upload/v1723064603/setting_anedf2.svg"
           />
-          <SideBarItem
-            title="Login as Book Owner"
-            path={``}
-            image="https://res.cloudinary.com/dcrldqkrc/image/upload/v1723064603/account_jqwxtr.svg"
-          />
+          <LogInAsBookOwner redirect="/owner" />
         </Box>
       </Box>
-      <div className="mt-auto">
-        <button className="bg-white block w-full py-2 px-3 rounded bg-opacity-20">
-          Logout
-        </button>
-      </div>
+      <LogOutButton redirect="/admin" />
     </Box>
   );
 }

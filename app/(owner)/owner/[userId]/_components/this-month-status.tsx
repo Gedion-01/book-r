@@ -4,6 +4,7 @@ import { Role } from "@prisma/client";
 import { JWTPayload } from "jose";
 import { getBooksCountByCategoryForUser } from "@/lib/get-books-by-category";
 import PieChartCard from "@/components/av-books";
+import { calculateEarnings } from "@/actions/owner/calculate-earning";
 
 interface ThisMonthStatusProps {
   userPayload: {
@@ -17,6 +18,9 @@ export async function ThisMonthStatus({ userPayload }: ThisMonthStatusProps) {
     userPayload.id,
     userPayload.role
   );
+  const earning = await calculateEarnings(userPayload.id);
+  console.log(earning, "my earning");
+
   return (
     <div className="col-span-2 lg:col-span-1 bg-white rounded-[14px] shadow-md h-full w-full">
       <Box component="div" sx={{ paddingTop: "32px", paddingX: "15px" }}>
@@ -106,7 +110,7 @@ export async function ThisMonthStatus({ userPayload }: ThisMonthStatusProps) {
                 lineHeight: "40px",
               }}
             >
-              ETB 9460.00
+              ETB {earning}
             </Typography>
             <Typography
               sx={{

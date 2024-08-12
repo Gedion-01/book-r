@@ -10,34 +10,29 @@ import {
 import { Box, Typography } from "@mui/material";
 
 import { useStore } from "@/store/store";
+import { Book } from "@prisma/client";
 
 type BookStatus = "RENTED" | "FREE";
 
-interface Book {
+interface LBookStatus {
   no: number;
   bookNo: number;
   id: string;
-  title: string;
-  author: string;
-  quantity: number;
-  status: BookStatus;
   ownerId: string;
+  title: string;
+
+  status: BookStatus;
   rentPrice: number;
-  bookImageUrl: string;
-  isApproved: boolean;
-  createdAt: Date;
-  categoryId: string | null;
-  updatedAt: Date;
-  owner: {
-    email: string;
-  };
+
+    email: string
+  book: Book;
 }
 
 const LiveBookStatus = () => {
   const { refreshKey } = useStore();
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<LBookStatus[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -70,7 +65,7 @@ const LiveBookStatus = () => {
     bookNo: index + 1 + pageIndex * pageSize,
   }));
 
-  const columns = useMemo<MRT_ColumnDef<Book>[]>(
+  const columns = useMemo<MRT_ColumnDef<LBookStatus>[]>(
     () => [
       {
         header: "No.",
@@ -135,7 +130,7 @@ const LiveBookStatus = () => {
                 color: "rgba(26, 25, 25, 1)",
               }}
             >
-              {cell.row.original.owner.email}
+              {cell.row.original.email}
             </Typography>
           );
         },

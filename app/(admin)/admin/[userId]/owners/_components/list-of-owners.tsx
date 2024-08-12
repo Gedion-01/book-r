@@ -310,7 +310,7 @@ const ListOfOwners = () => {
       {
         header: "Action",
         id: "actions",
-        size: 100,
+        size: 250,
         Cell: ({ row }) => {
           const { id, email, location, phone } = row.original;
           return (

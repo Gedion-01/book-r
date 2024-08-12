@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { ThisMonthStatus } from "./_components/this-month-status";
 import { Box } from "@mui/material";
 import LiveBookStatus from "./_components/live-book-status";
+import { earningSummary } from "@/actions/admin/earning-summary";
+import EarningSummaryChart from "./_components/earnimg-summary";
 
 export default async function OwnerPage({
   params,
@@ -24,6 +26,9 @@ export default async function OwnerPage({
     return redirect("/admin");
   }
 
+  const data = await earningSummary();
+  console.log(data);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full">
       {/* <!-- Stats Card --> */}
@@ -36,11 +41,14 @@ export default async function OwnerPage({
 
         {/* <!-- Additional Content --> */}
 
-        <div className="col-span-2 bg-white p-4 rounded shadow-md">
-          <h3 className="text-xl font-semibold">Earning Summary</h3>
+        <div className="col-span-2 bg-white p-4 rounded-[14px] shadow-md">
           <div className="flex justify-center items-center">
             {/* <!-- Placeholder for graph --> */}
-            {/* <EarningSummaryChart /> */}
+            <EarningSummaryChart
+              data={data}
+              title="Earning Summary"
+              subtitle="Mar 2022 - Oct 2024"
+            />
           </div>
         </div>
       </div>

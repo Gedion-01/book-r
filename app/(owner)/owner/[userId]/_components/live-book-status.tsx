@@ -20,6 +20,8 @@ interface LiveBookStatusProps {
 }
 
 interface LBookStatus {
+  no: number;
+  bookNo: number;
   id: string;
   ownerId: string;
   title: string;
@@ -68,9 +70,82 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
 
   const columns = useMemo<MRT_ColumnDef<LBookStatus>[]>(
     () => [
-      { header: "No.", accessorKey: "no", size: 50 },
-      { header: "Book no.", accessorKey: "bookNo", size: 100 },
-      { header: "Book Name", accessorKey: "title", size: 250 },
+      {
+        header: "No.",
+        accessorKey: "no",
+        size: 50,
+        Cell: ({ cell }) => {
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: 400,
+                  fontSize: "16px",
+                  lineHeight: "19.36px",
+                  color: "rgba(26, 25, 25, 1)",
+                  borderRadius: "4px",
+                }}
+              >
+                {cell.row.original.no}
+              </Typography>
+            </Box>
+          );
+        },
+      },
+      {
+        header: "Book no.",
+        accessorKey: "bookNo",
+        size: 100,
+        Cell: ({ cell }) => {
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: 400,
+                  fontSize: "16px",
+                  lineHeight: "19.36px",
+                  color: "rgba(26, 25, 25, 1)",
+                  bgcolor: "red",
+                  padding: "4px 12px",
+                  backgroundColor: "rgba(153, 153, 153, 0.1)",
+                  borderRadius: "4px",
+                }}
+              >
+                {cell.row.original.bookNo}
+              </Typography>
+            </Box>
+          );
+        },
+      },
+      {
+        header: "Book Name",
+        accessorKey: "title",
+        size: 250,
+        Cell: ({ cell }) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 400,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(26, 25, 25, 1)",
+              }}
+            >
+              {cell.row.original.title}
+            </Typography>
+          );
+        },
+      },
       {
         header: "Status",
         accessorKey: "status",
@@ -96,7 +171,17 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
                 <circle cx="8" cy="8" r="7.5" stroke="#FF0000" />
                 <circle cx="8" cy="8" r="5.5" fill="#FF0000" stroke="#FF0000" />
               </svg>
-              <span className="mt-1">{status}</span>
+              <Typography
+                sx={{
+                  fontWeight: 300, // Example font weight
+                  fontSize: "14px", // Example font size
+                  lineHeight: "18px",
+                  marginTop: "2px",
+                  color: "rgba(101, 101, 117, 1)",
+                }}
+              >
+                {status}
+              </Typography>
             </Box>
           ) : (
             <Box
@@ -117,12 +202,40 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
                 <circle cx="8" cy="8" r="7.5" stroke="#0000FF" />
                 <circle cx="8" cy="8" r="5.5" fill="#0000FF" stroke="#0000FF" />
               </svg>
-              <span className="mt-1">{status}</span>
+              <Typography
+                sx={{
+                  fontWeight: 300, // Example font weight
+                  fontSize: "14px", // Example font size
+                  lineHeight: "18px",
+                  marginTop: "2px",
+                  color: "rgba(101, 101, 117, 1)",
+                }}
+              >
+                {status}
+              </Typography>
             </Box>
           );
         },
       },
-      { header: "Price", accessorKey: "rentPrice", size: 100 },
+      {
+        header: "Price",
+        accessorKey: "rentPrice",
+        size: 100,
+        Cell: ({ cell }) => {
+          return (
+            <Typography
+              sx={{
+                fontWeight: 300,
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(101, 101, 117, 1)",
+              }}
+            >
+              {cell.row.original.rentPrice}
+            </Typography>
+          );
+        },
+      },
       {
         header: "Action",
         id: "actions",
@@ -201,7 +314,7 @@ const LiveBookStatus = ({ userId }: LiveBookStatusProps) => {
               color: "rgba(26, 25, 25, 1)",
             }}
           >
-            List of books
+            Live Book Status
           </Typography>
         )}
       />

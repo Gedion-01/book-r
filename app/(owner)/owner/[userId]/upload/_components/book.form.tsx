@@ -35,7 +35,7 @@ const quantity = [
 
 // Define the Zod schema
 const formSchema = z.object({
-  rentPrice: z.string().min(1, "Book Price is required"),
+  rentPrice: z.number().positive("Book Price is required and must be greater than or equal to 0"),
   bookCategoryId: z.string().min(1, "Book quantity is required"),
   bookCoverImageUrl: z.string().min(1, "Image is required"),
 });
@@ -53,7 +53,7 @@ export default function BookForm({ userId, categories, books }: BookFormProps) {
   const router = useRouter();
   const { book, addBook } = useStore();
   const [selectedOption, setSelectedOption] = useState<string>("");
-  const [rentPrice, setRentPrice] = useState<string>("");
+  const [rentPrice, setRentPrice] = useState<number>(0);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -63,7 +63,7 @@ export default function BookForm({ userId, categories, books }: BookFormProps) {
 
   useEffect(() => {
     if (book) {
-      setRentPrice(book.bookRentPrice || "");
+      setRentPrice(Number(book.bookRentPrice) || 0);
       setSelectedOption(book.bookQuantity || "");
       setImageUrl(book.bookCoverImageUrl || "");
     }
@@ -187,11 +187,12 @@ export default function BookForm({ userId, categories, books }: BookFormProps) {
           <TextField
             id="rentPrice"
             name="rentPrice"
+            type="number"
             label="Rent Price"
             fullWidth
             sx={{ marginBottom: "20px" }}
             value={rentPrice}
-            onChange={(e) => setRentPrice(e.target.value)}
+            onChange={(e) => setRentPrice(Number(e.target.value))}
             error={!!errors.rentPrice}
             helperText={errors.rentPrice}
           />

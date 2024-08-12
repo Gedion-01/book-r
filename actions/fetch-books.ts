@@ -4,7 +4,6 @@ export const fetchBooks = async () => {
   try {
     const books = await prisma.book.findMany({
       where: {
-        
         isApproved: true,
         owner: {
           isApproved: true,
@@ -33,14 +32,13 @@ export const fetchBooks = async () => {
       },
     });
 
-    // Calculate the available quantity for each book
-    const booksWithAvailableQuantity = books.map(book => ({
+    const booksWithAvailableQuantity = books.map((book) => ({
       ...book,
-      availableQuantity: book.copies.filter(copy => copy.status === "FREE").length,
+      availableQuantity: book.copies.filter((copy) => copy.status === "FREE")
+        .length,
     }));
 
     return booksWithAvailableQuantity;
-  
   } catch (error) {
     console.error("Error fetching books:", error);
 

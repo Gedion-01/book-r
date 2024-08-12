@@ -2,20 +2,11 @@ import { redirect } from "next/navigation";
 import { verifyAuth } from "@/lib/auth";
 import { defineAbilitiesFor } from "@/lib/casl-ability";
 import { fetchBooks } from "@/actions/fetch-books";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
-  Divider,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Divider } from "@mui/material";
 import { AvailableBooks } from "./_components/available-books";
 import { RentedBooks } from "./_components/rented-books";
 import { fetchRentedBooks } from "@/actions/fetch-rented-books";
-import { userInfo } from "os";
+import Navbar from "./_components/navbar";
 
 export default async function UserPage({
   params,
@@ -35,6 +26,7 @@ export default async function UserPage({
   });
 
   if (!ability.can("read", "Book")) {
+    console.log("User not allowed to read books");
     return redirect("/");
   }
 
@@ -47,8 +39,9 @@ export default async function UserPage({
   }
   return (
     <>
+      <Navbar />
       <RentedBooks books={rentedBooks} userId={userPayload.id} />
-      <Divider variant="fullWidth" sx={{ }} />
+      <Divider variant="fullWidth" sx={{}} />
       <AvailableBooks books={books} userId={userPayload.id} />
     </>
   );

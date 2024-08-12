@@ -31,15 +31,9 @@ interface Book {
   createdAt: Date;
   categoryId: string | null;
   updatedAt: Date;
-  owner: {
-    email: string;
-    status: UserStatus;
-    id: string;
-  };
-  category: {
-    id: string;
-    name: string;
-  };
+  owner: string;
+  category: string;
+  BookStatus: boolean
 }
 
 const ListOfBooks = () => {
@@ -130,7 +124,7 @@ const ListOfBooks = () => {
           );
         }
        },
-      { header: "Owner", accessorKey: "owner.email", size: 150, 
+      { header: "Owner", accessorKey: "owner", size: 150, 
         Cell: ({cell}) => {
           return (
             <Typography
@@ -141,12 +135,12 @@ const ListOfBooks = () => {
                 color: "rgba(26, 25, 25, 1)"
               }}
             >
-              {cell.row.original.owner.email}
+              {cell.row.original.owner}
             </Typography>
           );
         }
        },
-      { header: "Category", accessorKey: "category.name", size: 150, 
+      { header: "Category", accessorKey: "category", size: 150, 
         Cell: ({cell}) => {
           return (
             <Typography
@@ -157,7 +151,7 @@ const ListOfBooks = () => {
                 color: 'rgba(101, 101, 117, 1)',
               }}
             >
-              {cell.row.original.category.name}
+              {cell.row.original.category}
             </Typography>
           );
         }
@@ -180,14 +174,14 @@ const ListOfBooks = () => {
        },
       {
         header: "Status",
-        accessorKey: "isApproved",
+        accessorKey: "BookStatus",
         size: 200,
         muiTableHeadCellProps: {
           align: "center", // Center align the header
         },
         Cell: ({ cell }) => {
           const bookId = cell.row.original.id;
-          const status = cell.row.original.isApproved;
+          const status = cell.row.original.BookStatus;
           return status === true ? (
             <Box
               sx={{

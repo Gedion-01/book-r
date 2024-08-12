@@ -279,12 +279,22 @@ export default function AuthForm({ mode, role, title }: AuthFormProps) {
         if (role === "OWNER") {
           router.push(`/owner/${res.data.id}`);
         }
-        if( role === "USER"){
+        if (role === "USER") {
           router.push(`/user/${res.data.id}`);
         }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 400) {
           toast.error("Invalid email or password");
+        } else if (
+          axios.isAxiosError(error) &&
+          error.response?.status === 403
+        ) {
+          toast.error("Invalid role, sign in with correct role");
+        } else if (
+          axios.isAxiosError(error) &&
+          error.response?.status === 404
+        ) {
+          toast.error("User account is disabled or blocked");
         } else {
           toast.error("Something went wrong");
         }

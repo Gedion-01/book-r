@@ -3,6 +3,7 @@ import getUserId from "@/lib/auth";
 import { defineAbilitiesFor } from "@/lib/casl-ability";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { BookStatus } from "@prisma/client";
 
 export async function GET(request: NextApiRequest) {
   try {
@@ -29,10 +30,9 @@ export async function GET(request: NextApiRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    // console.log("searchParams", searchParams);
 
-    const page = searchParams.get("page") || "0";
-    const size = searchParams.get("size") || "10";
+    const page = parseInt(searchParams.get("page") || "0", 10);
+    const size = parseInt(searchParams.get("size") || "10", 10);
     const sort = searchParams.get("sort") || "title";
     const filter = searchParams.get("filter") || "";
 
@@ -78,18 +78,33 @@ export async function GET(request: NextApiRequest) {
         ],
       },
       orderBy,
-      skip: Number(page) * Number(size),
-      take: Number(size),
-      include: {
+      skip: page * size,
+      take: size,
+      select: {
+        id: true,
+        ownerId: true,
+        title: true,
+        rentPrice: true,
+        quantity: true,
+        bookImageUrl: true,
+        author: true,
+        categoryId: true,
+        isApproved: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+
+        copies: {
+          select: {
+            id: true,
+            status: true,
+          },
+        },
         owner: {
           select: {
             email: true,
-          },
-        },
-        category: {
-          select: {
-            id: true,
-            name: true,
           },
         },
       },
@@ -97,15 +112,36 @@ export async function GET(request: NextApiRequest) {
 
     const totalBooks = await prisma.book.count({
       where: {
-        ownerId: userId,
         OR: [
           { title: { contains: filter, mode: "insensitive" } },
           { author: { contains: filter, mode: "insensitive" } },
+          { owner: { email: { contains: filter, mode: "insensitive" } } },
+          { category: { name: { contains: filter, mode: "insensitive" } } },
         ],
       },
     });
+    // Format the response to flatten the copies into the main object
 
-    return NextResponse.json({ books, totalBooks });
+    const formattedBooks = books
+      .map((book) =>
+        book.copies.map((copy) => ({
+          id: book.id,
+          ownerId: book.ownerId,
+          title: book.title,
+          rentPrice: book.rentPrice,
+          copyId: copy.id,
+          status: copy.status,
+          email: book.owner.email,
+          book: book,
+          owner: book.owner.email,
+          category: book.category?.name,
+          BookStatus: book.isApproved,
+          author: book.author
+        }))
+      )
+      .flat();
+
+    return NextResponse.json({ books: formattedBooks, totalBooks });
   } catch (error) {
     console.error("Error fetching books:", error);
     return NextResponse.json(

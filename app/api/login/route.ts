@@ -36,7 +36,6 @@ export async function POST(request: Request) {
         email: email,
       },
     });
-    console.log(user);
 
     if (!user) {
       console.log("Invalid");
@@ -51,6 +50,25 @@ export async function POST(request: Request) {
 
     // compare the password
     const isCorrectPassword = bycrypt.compareSync(password, user.password);
+
+    // check the role
+    if (user.role !== role) {
+      return NextResponse.json(
+        {
+          error: "Invalid role",
+        },
+        { status: 403 }
+      );
+    }
+
+    if (user.status === "DISABLED") {
+      return NextResponse.json(
+        {
+          error: "User account is disabled or blocked",
+        },
+        { status: 404 }
+      );
+    }
 
     if (!isCorrectPassword) {
       return Response.json(

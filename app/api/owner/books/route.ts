@@ -4,7 +4,7 @@ import { defineAbilitiesFor } from "@/lib/casl-ability";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(request: NextApiRequest) {
+export async function GET(request: Request) {
   try {
     const userId = await getUserId();
 

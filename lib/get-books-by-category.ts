@@ -21,10 +21,11 @@ export async function getBooksCountByCategoryForUser(
 
     // Aggregate the counts by category
     const categoryCounts = booksCountByCategory.reduce((acc, book) => {
-      const categoryName = book.category.name as string;
-      if (categoryName) {
+      if (book.category) {
+        const categoryName = book.category.name as string;
         acc[categoryName] = (acc[categoryName] || 0) + 1;
       }
+
       return acc;
     }, {} as Record<string, number>);
 
@@ -49,8 +50,8 @@ export async function getBooksCountByCategoryForUser(
 
     // Aggregate the counts by category
     const categoryCounts = booksCountByCategory.reduce((acc, book) => {
-      const categoryName = book.category.name as string;
-      if (categoryName) {
+      if (book.category) {
+        const categoryName = book.category.name as string;
         acc[categoryName] = (acc[categoryName] || 0) + 1;
       }
       return acc;

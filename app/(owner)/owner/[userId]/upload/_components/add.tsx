@@ -106,8 +106,9 @@ export default function BookSearch({ options, books }: BookDialogProps) {
             }}
             onMouseDown={handleListItemClick} // Handle mouse down to prevent blur from closing the list
           >
-            {books.map((book) => (
+            {books.map((book, i) => (
               <button
+                key={i}
                 className="w-full"
                 onClick={() => {
                   setDialogOpen(true)

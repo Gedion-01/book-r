@@ -18,6 +18,7 @@ export function FileUpload({ onChange, endpoint, }: FileUploadProps) {
       }}
       onUploadError={(error: Error) => {
         toast.error(`File upload failed`);
+        console.error('Upload error:', error);
       }}
     ></UploadDropzone>
   );

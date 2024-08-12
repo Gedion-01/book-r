@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import {
   MaterialReactTable,
   type MRT_ColumnDef,
@@ -60,21 +60,24 @@ const ListOfOwners = () => {
     fetchBooks();
   }, [pageIndex, pageSize, sorting, globalFilter, refreshKey]);
 
-  const handleSwitchChange = async (userId: string, status: UserStatus) => {
-    try {
-      setIsLoading(true);
-      const res = await axios.patch("/api/admin/changeuserstatus", {
-        toBeUpdatedUserId: userId,
-        userStatus: status,
-      });
-      toggleRefresh();
-      toast.success("User status updated");
-    } catch (error) {
-      toast.error("An error has occured");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleSwitchChange = useCallback(
+    async (userId: string, status: UserStatus) => {
+      try {
+        setIsLoading(true);
+        const res = await axios.patch("/api/admin/changeuserstatus", {
+          toBeUpdatedUserId: userId,
+          userStatus: status,
+        });
+        toggleRefresh();
+        toast.success("User status updated");
+      } catch (error) {
+        toast.error("An error has occured");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [toggleRefresh]
+  );
 
   const booksWithNumbers = owners.map((owner, index) => ({
     ...owner,
@@ -327,7 +330,7 @@ const ListOfOwners = () => {
         },
       },
     ],
-    []
+    [handleSwitchChange, isLoading]
   );
 
   return (

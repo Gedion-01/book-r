@@ -1,4 +1,5 @@
-import AuthForm from "@/components/auth-form";
+import AuthFormSignIn from "@/components/auth-form-signin";
+import AuthFormSignup from "@/components/auth-form-signup";
 
 interface PageProps {
   searchParams: {
@@ -8,5 +9,22 @@ interface PageProps {
 
 export default function Page({ searchParams }: PageProps) {
   const formMode = searchParams.mode || "login";
-  return <AuthForm mode={formMode} role="USER" title={formMode === "login" ? "Login into Book Rent" : "Signup into Book Rent"} />;
+
+  if (formMode === "login") {
+    return (
+      <AuthFormSignIn
+        mode={formMode}
+        role="USER"
+        title="Login into Book Rent"
+      />
+    );
+  } else {
+    return (
+      <AuthFormSignup
+        mode={formMode}
+        role="USER"
+        title="Signup into Book Rent"
+      />
+    );
+  }
 }

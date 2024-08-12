@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import {
   MaterialReactTable,
   type MRT_ColumnDef,
@@ -15,7 +15,6 @@ import toast from "react-hot-toast";
 
 type BookStatus = "RENTED" | "FREE";
 type UserStatus = "ACTIVE" | "DISABLED";
-
 
 interface Book {
   no: number;
@@ -33,7 +32,7 @@ interface Book {
   updatedAt: Date;
   owner: string;
   category: string;
-  BookStatus: boolean
+  BookStatus: boolean;
 }
 
 const ListOfBooks = () => {
@@ -68,21 +67,24 @@ const ListOfBooks = () => {
     fetchBooks();
   }, [pageIndex, pageSize, sorting, globalFilter, refreshKey]);
 
-  const handleSwitchChange = async (bookId: string, status: boolean) => {
-    try {
-      setIsLoading(true);
-      const res = await axios.patch("/api/admin/approvebook", {
-        toBeUpdatedBookId: bookId,
-        isApproved: !status,
-      });
-      toggleRefresh();
-      toast.success("Book status updated");
-    } catch (error) {
-      toast.error("An error has occured");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleSwitchChange = useCallback(
+    async (bookId: string, status: boolean) => {
+      try {
+        setIsLoading(true);
+        const res = await axios.patch("/api/admin/approvebook", {
+          toBeUpdatedBookId: bookId,
+          isApproved: !status,
+        });
+        toggleRefresh();
+        toast.success("Book status updated");
+      } catch (error) {
+        toast.error("An error has occured");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [toggleRefresh]
+  );
 
   const booksWithNumbers = books.map((book, index) => ({
     ...book,
@@ -92,86 +94,101 @@ const ListOfBooks = () => {
 
   const columns = useMemo<MRT_ColumnDef<Book>[]>(
     () => [
-      { header: "No.", accessorKey: "no", size: 50,
-        Cell: ({cell}) => {
+      {
+        header: "No.",
+        accessorKey: "no",
+        size: 50,
+        Cell: ({ cell }) => {
           return (
             <Typography
               sx={{
                 fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '19.36px',
-                color: "rgba(26, 25, 25, 1)"
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(26, 25, 25, 1)",
               }}
             >
               {cell.row.original.no}
             </Typography>
           );
-        }
-       },
-      { header: "Author", accessorKey: "author", size: 100, 
-        Cell: ({cell}) => {
+        },
+      },
+      {
+        header: "Author",
+        accessorKey: "author",
+        size: 100,
+        Cell: ({ cell }) => {
           return (
             <Typography
               sx={{
                 fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '19.36px',
-                color: "rgba(26, 25, 25, 1)"
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(26, 25, 25, 1)",
               }}
             >
               {cell.row.original.author}
             </Typography>
           );
-        }
-       },
-      { header: "Owner", accessorKey: "owner", size: 150, 
-        Cell: ({cell}) => {
+        },
+      },
+      {
+        header: "Owner",
+        accessorKey: "owner",
+        size: 150,
+        Cell: ({ cell }) => {
           return (
             <Typography
               sx={{
                 fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '19.36px',
-                color: "rgba(26, 25, 25, 1)"
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(26, 25, 25, 1)",
               }}
             >
               {cell.row.original.owner}
             </Typography>
           );
-        }
-       },
-      { header: "Category", accessorKey: "category", size: 150, 
-        Cell: ({cell}) => {
+        },
+      },
+      {
+        header: "Category",
+        accessorKey: "category",
+        size: 150,
+        Cell: ({ cell }) => {
           return (
             <Typography
               sx={{
                 fontWeight: 300,
-                fontSize: '16px',
-                lineHeight: '19.36px',
-                color: 'rgba(101, 101, 117, 1)',
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(101, 101, 117, 1)",
               }}
             >
               {cell.row.original.category}
             </Typography>
           );
-        }
-       },
-      { header: "Book Name", accessorKey: "title", size: 150,
-        Cell: ({cell}) => {
+        },
+      },
+      {
+        header: "Book Name",
+        accessorKey: "title",
+        size: 150,
+        Cell: ({ cell }) => {
           return (
             <Typography
               sx={{
                 fontWeight: 300,
-                fontSize: '16px',
-                lineHeight: '19.36px',
-                color: 'rgba(101, 101, 117, 1)',
+                fontSize: "16px",
+                lineHeight: "19.36px",
+                color: "rgba(101, 101, 117, 1)",
               }}
             >
               {cell.row.original.title}
             </Typography>
           );
-        }
-       },
+        },
+      },
       {
         header: "Status",
         accessorKey: "BookStatus",
@@ -318,7 +335,7 @@ const ListOfBooks = () => {
         },
       },
     ],
-    []
+    [handleSwitchChange, isLoading]
   );
 
   return (

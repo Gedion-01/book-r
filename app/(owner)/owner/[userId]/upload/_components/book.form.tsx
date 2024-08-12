@@ -35,7 +35,9 @@ const quantity = [
 
 // Define the Zod schema
 const formSchema = z.object({
-  rentPrice: z.number().positive("Book Price is required and must be greater than or equal to 0"),
+  rentPrice: z
+    .number()
+    .positive("Book Price is required and must be greater than or equal to 0"),
   bookCategoryId: z.string().min(1, "Book quantity is required"),
   bookCoverImageUrl: z.string().min(1, "Image is required"),
 });
@@ -169,9 +171,8 @@ export default function BookForm({ userId, categories, books }: BookFormProps) {
               id="bookCategoryId"
               value={selectedOption}
               label="Book Quantity"
-              onChange={handleChange}
+              onChange={handleChange as any}
               error={!!errors.bookCategoryId}
-              helperText={errors.bookCategoryId}
             >
               {quantity.map((q) => (
                 <MenuItem key={q.id} value={q.name}>

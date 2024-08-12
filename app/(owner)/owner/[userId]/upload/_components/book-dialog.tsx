@@ -70,7 +70,7 @@ export default function FormDialog({ options, existingBook, open, setCloseDialog
 
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
-      setErrors(fieldErrors);
+      setErrors(fieldErrors as any);
       return;
     }
 

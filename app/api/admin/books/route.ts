@@ -1,11 +1,10 @@
-import { NextApiRequest } from "next";
 import getUserId from "@/lib/auth";
 import { defineAbilitiesFor } from "@/lib/casl-ability";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { BookStatus } from "@prisma/client";
 
-export async function GET(request: NextApiRequest) {
+export async function GET(request: Request) {
   try {
     const userId = await getUserId();
 
@@ -136,7 +135,7 @@ export async function GET(request: NextApiRequest) {
           owner: book.owner.email,
           category: book.category?.name,
           BookStatus: book.isApproved,
-          author: book.author
+          author: book.author,
         }))
       )
       .flat();

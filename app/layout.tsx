@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import ToastProvider from "@/components/providers/toast-provider";
+import QuestionMarkPopup from "@/components/QuestionMarkPopup";
 
 
 
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className={`bg-[#F0F2FF]`}>
         <ToastProvider />
         {children}
+        <QuestionMarkPopup />
       </body>
     </html>
   );

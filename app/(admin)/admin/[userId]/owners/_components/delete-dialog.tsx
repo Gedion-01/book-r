@@ -17,10 +17,10 @@ import { useStore } from "@/store/store";
 interface AlertDialogProps {
   open: boolean;
   handleClose: () => void;
-  bookId: string;
+  userId: string;
 }
 
-export function DeleteDialog({ open, handleClose, bookId }: AlertDialogProps) {
+export function DeleteDialog({ open, handleClose, userId }: AlertDialogProps) {
   const { toggleRefresh } = useStore();
 
   const router = useRouter();
@@ -29,9 +29,9 @@ export function DeleteDialog({ open, handleClose, bookId }: AlertDialogProps) {
   const handleDelete = async (bookId: string) => {
     try {
       setIsDeleting(true);
-      console.log(`Deleting book with ID: ${bookId}`);
-      const res = await axios.delete(`/api/owner/delete/${bookId}`);
-      toast.success("Book deleted successfully");
+      
+      const res = await axios.delete(`/api/admin/deleteuser/${userId}`);
+      toast.success("User deleted successfully");
       router.refresh();
       toggleRefresh();
     } catch (error) {
@@ -53,7 +53,7 @@ export function DeleteDialog({ open, handleClose, bookId }: AlertDialogProps) {
         sx={{}}
       >
         <DialogTitle id="alert-dialog-title">
-          Are you sure you want to delete this book?
+          Are you sure you want to delete this user?
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -65,7 +65,7 @@ export function DeleteDialog({ open, handleClose, bookId }: AlertDialogProps) {
             Cancel
           </Button>
           <Button
-            onClick={() => handleDelete(bookId)}
+            onClick={() => handleDelete(userId)}
             autoFocus
             disabled={isDeleting}
           >

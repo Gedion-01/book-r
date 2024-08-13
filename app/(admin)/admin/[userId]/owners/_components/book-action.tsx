@@ -90,7 +90,7 @@ export default function BookAction({
             />
           </IconButton>
         </Box>
-        <DeleteDialog open={open} handleClose={handleClose} bookId={""} />
+        <DeleteDialog open={open} handleClose={handleClose} userId={userId}/>
         {isApproved ? (
           <Button
             disabled={isLoading}

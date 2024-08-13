@@ -51,7 +51,7 @@ model Book {
   author       String
   quantity     Int
   status       BookStatus    @default(FREE)
-  owner        User          @relation("OwnerBooks", fields: [ownerId], references: [id])
+  owner        User          @relation("OwnerBooks", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId      String
   rentPrice    Float
   bookImageUrl String
@@ -72,7 +72,7 @@ model BookCopy {
   book       Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
   bookId     String
   status     BookStatus @default(FREE)
-  rentedBy   User?      @relation(fields: [rentedById], references: [id])
+  rentedBy   User?      @relation(fields: [rentedById], references: [id], onDelete: Cascade)
   rentedById String?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
@@ -88,7 +88,7 @@ model Transaction {
   id         String    @id @default(cuid())
   type       String
   bookId     String
-  user       User      @relation(fields: [userId], references: [id], name: "TransactionOwner") // Clarify the relationship
+  user       User      @relation(fields: [userId], references: [id], name: "TransactionOwner", onDelete: Cascade) // Clarify the relationship
   userId     String
   price      Float
   rentedAt   DateTime? @default(now())

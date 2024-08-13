@@ -51,7 +51,7 @@ const ListOfOwners = () => {
           },
         });
         setOwners(response.data.owners);
-        console.log("Fetched owners:", response.data.books);
+        console.log("Fetched owners:", response.data);
       } catch (error) {
         console.error("Error fetching books:", error);
       }
